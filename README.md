@@ -10,7 +10,7 @@ The main objectives of the new library were:
 * to focus on new browsers
 
 Therefore the new library is targeting browsers that support [addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) and [removeEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener) functions, and others properties like `classList`, `querySelectorAll`, that may be not available in older browsers.
-If the support for older browsers is required, the [older DataEntry library](https://github.com/RobertoPrevato/jQuery-DataEntry) is still available for download.
+If the support for older browsers is required, the [older DataEntry library](https://github.com/RobertoPrevato/jQuery-DataEntry) is still available.
 
 ## Differences with the previous version
 Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should be used only for exceptional situations, the new implementation of DataEntry always resolve the promises utilized during the validation of fields and forms: returning a value indicating whether a form is valid or not.
