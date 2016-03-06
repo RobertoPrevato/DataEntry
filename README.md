@@ -1,5 +1,5 @@
 # DataEntry
-Forms validation library that implements ES6 Promise based validation of fields and forms, automatic decoration of fields, localized error messages.
+Forms validation library that implements ES6 Promise based validation of fields and forms, automatic decoration of fields, localized error messages. Integrable with Angular, Backbone, Knockout, React.
 
 ## Objectives
 The objectives of the DataEntry library are:
