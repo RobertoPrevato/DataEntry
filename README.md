@@ -1,7 +1,7 @@
 # DataEntry
 Forms validation library that implements ES6 Promise based validation of fields and forms, automatic decoration of fields, localized error messages.
 
-## Objectives, targeting the new
+## Objectives
 The DataEntry widget has been written as a re-design of a [previous library](https://github.com/RobertoPrevato/jQuery-DataEntry) that depended upon both Lodash and jQuery, and was using the Deferred object from jQuery. 
 
 The main objectives of the new library were:
