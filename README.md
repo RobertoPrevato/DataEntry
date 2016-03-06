@@ -13,5 +13,9 @@ Therefore the new library is targeting browsers that support [addEventListener](
 If the support for older browsers is required, the [older DataEntry library](https://github.com/RobertoPrevato/jQuery-DataEntry) is still available.
 
 ## Differences with the previous version
+The main differences with the previous version of the DataEntry library, are:
+* removed dependency from jQuery and Lodash
+* use of native Promise instead of jQuery 2.x Deferred
+
 Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should be used only for exceptional situations, the new implementation of DataEntry always resolve the promises utilized during the validation of fields and forms: returning a value indicating whether a form is valid or not.
 Therefore any rejection that may happen must be caused by an unhandled exception happened while applying validation logic, and is ultimely related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
