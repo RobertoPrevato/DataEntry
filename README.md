@@ -6,8 +6,10 @@ The objectives of the DataEntry library are:
 * allow the implementation of application-wide validation strategy: centralizing the logic that displays error messages, and marks fields in valid or invalid state, and applies validation rules
 * Promise based validation of fields and forms, therefore supporting AJAX calls as part of validation process
 * validation of fields implemented in a declarative way
+* provide a way to implement form validation with (relatively) little amount of code
 * support multiple validation rules for every field: the validation of every field stops at the first rule that is not respected - in order to avoid useless AJAX calls, whenever AJAX is necessary
 * support for formatting rules upon focus and upon blur, constraints rules, all configurable in a declarative way
+* allow to define custom validation, formatting and constraint rules in a simple way
 
 ## Targeting the new browsers
 The DataEntry widget has been written as a re-design of a [previous library](https://github.com/RobertoPrevato/jQuery-DataEntry) that depended upon both Lodash and jQuery, and was using the Deferred object from jQuery. 
