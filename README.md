@@ -41,3 +41,7 @@ Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/200
 Therefore any rejection that may happen must be caused by an unhandled exception happened while applying validation logic, and is ultimely related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
 
 Otherwise, the logic to define validation, formatting, preformatting and constraints rules is unchanged.
+
+Other minor differences in respect of the previous version are:
+* support for Node/CommonJS and AMD loading
+* improved handling of radio input elements
