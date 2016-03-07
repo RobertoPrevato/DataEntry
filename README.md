@@ -3,8 +3,8 @@ Forms validation library that implements ES6 Promise based validation of fields 
 
 ## Objectives
 The objectives of the DataEntry library are:
-* allow the implementation of application-wide validation strategy: centralizing the logic that displays error messages, and marks fields in valid or invalid state, and applies validation rules
-* Promise based validation of fields and forms, therefore supporting AJAX calls as part of validation process
+* allow the implementation of application-wide validation strategy: centralizing the logic that displays error messages, marks fields in valid or invalid state, and applies validation and formatting rules
+* implement Promise based validation of fields and forms, therefore supporting AJAX calls as part of validation process
 * validation of fields implemented in a declarative way
 * provide a way to implement form validation with (relatively) little amount of code
 * support multiple validation rules for every field: the validation of every field stops at the first rule that is not respected - in order to avoid useless AJAX calls, whenever AJAX is necessary
