@@ -1,0 +1,343 @@
+body {
+  margin: 0;
+}
+a {
+  color: #000;
+  text-decoration: none;
+}
+a:visited {
+  color: #fff;
+}
+fieldset {
+  border: none;
+}
+legend {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 30px;
+  margin-bottom: 10px;
+  border-bottom: 1px dotted #ccc;
+}
+label {
+  display: inline-block;
+}
+select {
+  background: transparent;
+}
+span[tabindex] {
+  cursor: pointer;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.lowercase {
+  text-transform: lowercase;
+}
+.break {
+  clear: both;
+}
+fieldset.buttons {
+  padding-top: 18px;
+}
+fieldset.buttons .btn:nth-child(1) {
+  margin-left: 0px;
+}
+a.btn {
+  display: inline-block;
+  padding-top: 5px;
+}
+label {
+  font-size: 14px;
+  min-width: 100px;
+  margin-bottom: 12px;
+}
+caption,
+div.caption {
+  text-align: left;
+  font-weight: bold;
+  background: #e6e6e6;
+  padding: 5px 2px;
+  font-size: 12px;
+}
+.main-error h2 {
+  font-size: 14px;
+  margin-top: 0px;
+}
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: #333;
+  text-decoration: none;
+}
+.btn:active,
+.btn.active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+}
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+.nav {
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+.nav > li {
+  position: relative;
+  display: block;
+}
+.nav > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+.nav > li > a:hover,
+.nav > li > a:focus {
+  text-decoration: none;
+  background-color: #eee;
+}
+.nav > li.disabled > a {
+  color: #777;
+}
+.nav > li.disabled > a:hover,
+.nav > li.disabled > a:focus {
+  color: #777;
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+.nav-pills > li {
+  float: left;
+}
+.nav-pills > li > a {
+  border-radius: 4px;
+}
+.nav-pills > li + li {
+  margin-left: 2px;
+}
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  color: #fff;
+  background-color: #337ab7;
+}
+.nav-stacked > li {
+  float: none;
+}
+.nav-stacked > li + li {
+  margin-top: 2px;
+  margin-left: 0;
+}
+/**
+ * DataEntry v1.0.1, forms validation library that implements Promise based validation of fields and forms,
+ * automatic decoration of fields, localized error messages.
+ * https://github.com/RobertoPrevato/DataEntry
+ *
+ * Copyright 2016, Roberto Prevato
+ * http://ugrose.com
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+.ug-dataentry input[type=radio],
+.ug-dataentry input[type=checkbox] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  line-height: normal;
+  vertical-align: top;
+}
+.ug-validation-wrapper {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  position: relative;
+}
+.validation-tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: block;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: normal;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  line-break: auto;
+  top: -6px;
+  min-width: 200px;
+  left: 0%;
+}
+.validation-tooltip.right {
+  padding: 0 5px;
+  margin-left: 3px;
+}
+.validation-tooltip.in {
+  opacity: 1;
+}
+.validation-tooltip .tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.validation-tooltip .tooltip-inner {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  margin: 1px 0px;
+  background-color: #aa0000;
+  -webkit-box-shadow: 2px 2px 0px 0px #d9d9d9;
+  -moz-box-shadow: 2px 2px 0px 0px #d9d9d9;
+  box-shadow: 2px 2px 0px 0px #d9d9d9;
+}
+.validation-tooltip.right .tooltip-arrow {
+  top: 13px;
+  border-right-color: #aa0000;
+  left: 0;
+  margin-top: -5px;
+  border-width: 5px 5px 5px 0;
+}
+.ug-message-element {
+  display: inline-block;
+  padding-left: 15px;
+  font-size: 12px;
+}
+.ug-message-element.ui-error {
+  color: red;
+  font-style: italic;
+}
+#header {
+  border-bottom: 1px solid #666;
+}
+#header #logo-region {
+  background: #000;
+  padding: 5px 15px 10px 5px;
+}
+#header .nav {
+  padding: 0 25px 20px 25px;
+}
+#header .nav li {
+  margin-right: 12px;
+}
+#header h1 {
+  padding: 0 20px;
+  margin: 15px 0 15px 5px;
+}
+#header h1 > span {
+  font-size: 18px;
+}
+#header h6 {
+  color: #fff;
+  float: right;
+  font-size: 14px;
+  margin-top: 21px;
+}
+#header h6 a {
+  text-decoration: none;
+  color: white;
+}
+#header label,
+#header select {
+  font-size: 12px;
+}
+#header select {
+  margin-bottom: 12px;
+}
+#test-form label {
+  min-width: 320px;
+}
+#test-form fieldset.buttons {
+  padding-top: 18px;
+  border-top: 1px dotted #ccc;
+  margin-left: 20px;
+  padding-left: 0;
+}
+body {
+  padding: 0;
+  min-width: 1024px;
+}
+h1 {
+  font-size: 28px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+#main-menu {
+  max-width: 300px;
+  float: left;
+  border-right: 1px solid #ccc;
+  margin-right: 50px;
+  padding: 10px;
+}
+#main-menu li {
+  min-width: 200px;
+}
+#partial {
+  margin-left: 260px;
+  margin-right: 20px;
+  margin-top: 20px;
+  padding-top: 1px;
+}
+#partial h1 {
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+#partial ol li {
+  padding: 5px 10px;
+}
