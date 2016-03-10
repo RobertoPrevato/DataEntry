@@ -93,25 +93,21 @@
       </div>
     </div>
   </div>
-
   <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <!-- knockout -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
 
-  <!-- utility function for localization -->
   <script src="scripts/libs/i.js"></script>
   <script src="scripts/locale/errors.en.js"></script>
 
-  <!-- plugin -->
   <script src="scripts/libs/dataentry.js"></script>
   <script src="scripts/libs/dataentry-knockout.js"></script>
   <script>
-  +function () {
+  (function () {
 
     ko.bindingHandlers.appear = {
       init: function (element) {
-        $(element).show().css({ "visibility": "visible" });
+        element.style.display = "block";
+        element.style.visibility = "visible";
       }
     };
   
@@ -192,7 +188,7 @@
 
     //apply binding
     ko.applyBindings(instance, document.getElementById("partial"));
-  }();
+  })();
   </script>
 </body>
 </html>
