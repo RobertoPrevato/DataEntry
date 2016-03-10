@@ -42,6 +42,7 @@ ko.bindingHandlers.dataentry = {
       // if some other part of your code calls ko.removeNode(element)
       // Dispose of the dataentry
       this.dataentry.dispose();
+      this.dataentry = null;
     }.bind(viewModel));
   }
 };

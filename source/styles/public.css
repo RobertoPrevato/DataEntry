@@ -6,7 +6,7 @@ a {
   text-decoration: none;
 }
 a:visited {
-  color: #fff;
+  color: #000;
 }
 fieldset {
   border: none;
@@ -264,6 +264,9 @@ fieldset[disabled] a.btn {
   color: red;
   font-style: italic;
 }
+.hidden {
+  visibility: hidden;
+}
 #header {
   border-bottom: 1px solid #666;
 }
@@ -304,7 +307,17 @@ fieldset[disabled] a.btn {
 #test-form label {
   min-width: 320px;
 }
-#test-form fieldset.buttons {
+.detail-view dl {
+  margin-bottom: 20px;
+}
+.detail-view dl dt {
+  float: left;
+  min-width: 120px;
+}
+.detail-view dl dd {
+  margin: 10px;
+}
+fieldset.buttons {
   padding-top: 18px;
   border-top: 1px dotted #ccc;
   margin-left: 20px;
@@ -332,7 +345,7 @@ h1 {
   margin-left: 260px;
   margin-right: 20px;
   margin-top: 20px;
-  padding-top: 1px;
+  padding-top: 25px;
 }
 #partial h1 {
   margin-top: 5px;

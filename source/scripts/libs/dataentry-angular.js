@@ -35,6 +35,7 @@ angular.module("ug.dataentry", [])
       scope.$on("$destroy", function() {
         //dispose of the dataentry
         scope.dataentry.dispose();
+        scope.dataentry = null;
       });
     };
 
