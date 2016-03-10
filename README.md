@@ -19,8 +19,8 @@ The main objectives of the new library were:
 * to use the native Promise object
 * to focus on new browsers
 
-Therefore the new library is targeting browsers that support [addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) and [removeEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener) functions, and others properties like `classList`, `querySelectorAll`, that may be not available in older browsers.
-If the support for older browsers is required, the [older DataEntry library](https://github.com/RobertoPrevato/jQuery-DataEntry) is still available.
+Therefore the new library is targeting browsers that support [addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) and [removeEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener) functions, and others properties like `classList`, `querySelectorAll`, that may be not available in old browsers.
+If the support for old browsers is required, the [older DataEntry library](https://github.com/RobertoPrevato/jQuery-DataEntry) is still available.
 
 ## Features
 * ES6 Promise based validation of fields and forms
@@ -45,4 +45,6 @@ Otherwise, the logic to define validation, formatting, preformatting and constra
 
 Other minor differences in respect of the previous version are:
 * support for Node/CommonJS and AMD loading
+* improved documentation
+* 
 * improved handling of radio input elements
