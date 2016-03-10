@@ -79,11 +79,11 @@
   Forms.Utils = {};
 
   //localize
-  function localize(n) {
-    return I.t(n);
+  function localize(n, o) {
+    return I.t(n, o);
   }
-  function localizeError(n) {
-    return I.t("errors." + n);
+  function localizeError(n, o) {
+    return I.t("errors." + n, o);
   }
 
   //string utility functions
@@ -794,7 +794,7 @@
 
     //basic validation rules
     Rules: {
-      //no validation: useful when formatting is needed
+
       none: {
         fn: function () {
           return true;
