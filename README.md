@@ -46,5 +46,4 @@ Otherwise, the logic to define validation, formatting, preformatting and constra
 Other minor differences in respect of the previous version are:
 * support for Node/CommonJS and AMD loading
 * improved documentation
-* 
 * improved handling of radio input elements
