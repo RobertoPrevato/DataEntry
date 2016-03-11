@@ -141,7 +141,10 @@
     return  "[name='" + attrName(el) + "']";
   }
   function setValue(el, v) {
-    el.value = v;
+    if (el.value != v) {
+      el.value = v;
+      el.dispatchEvent(new Event("change"));
+    }
   }
   function getValue(el) {
     var isInput = /input/i.test(el.tagName);
@@ -274,6 +277,9 @@
     wrapper.bind(context || this);
     return wrapper;
   }
+  function unwrap(o) {
+    return isFunction(o) ? unwrap(o()) : o;
+  }
   function defer(fn) {
     setTimeout(fn, 0);
   }
@@ -375,6 +381,84 @@
     getFieldValue: function (name, field) {
       if (!name) raise(12);
       return this.getValueFromElement(field ? field : findFirst(this.element, '[name="' + name + '"]'));
+    }
+  });
+
+  /**
+   * Creates an instance of ContextHarvester: an harvester that gets values from an object, matching the name in model schema with a property on a given context.
+   * @type {Function}
+   */
+  var ContextHarvester = Harvesting.ContextHarvester = function (dataentry) {
+    return this.initialize(dataentry);
+  };
+  extend(ContextHarvester.prototype, {
+    /**
+     * Applies initialization logic to this ContextHarvester.
+     * @param dataentry
+     * @returns {ContextHarvester}
+     */
+    initialize: function (dataentry) {
+      if (!dataentry.context || !dataentry.context.dataentryObjectGetter)
+        raise(15);
+      var self = this;
+      self.dataentry = dataentry;
+      return self;
+    },
+
+    /**
+     * Disposes of this ContextHarvester.
+     */
+    dispose: function () {
+      var self = this;
+      self.dataentry = self.element = null;
+      return self;
+    },
+
+    /**
+     * Gets the values from the context.
+     * @returns {*}
+     */
+    getValues: function () {
+      //base function that returns values from this context
+      return this.getValuesFromContext(this.getContext());
+    },
+
+    /**
+     * Gets the object from which values should be read.
+     * @returns {*}
+     */
+    //returns the object from which to read the values
+    getContext: function () {
+      var ctx = this.dataentry.context.dataentryObjectGetter();
+      return unwrap(ctx);
+    },
+
+    /**
+     * Gets all values from the context.
+     * @param context
+     * @returns {{}}
+     */
+    getValuesFromContext: function (context) {
+      var o = {}, schema = this.dataentry.schema, x;
+      for (x in schema) {
+        if (context.hasOwnProperty(x)) {
+          var val = unwrap(context[x]);
+          o[x] = val;
+        }
+      }
+      return o;
+    },
+
+    /**
+     * Gets the value for the property with the given name.
+     * @param name
+     * @returns {*}
+     */
+    getFieldValue: function (name) {
+      var context = this.getContext();
+      if (context.hasOwnProperty(name))
+        return unwrap(context[name])
+      return null;
     }
   });
 

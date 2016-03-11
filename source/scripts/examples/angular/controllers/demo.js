@@ -5,13 +5,13 @@ window.scope = scope;
     person: {
       name: "",
       age: "",
-      favoriteBand: ""
+      band: ""
     },
 
     personEdit: {
       name: "",
       age: "",
-      favoriteBand: ""
+      band: ""
     },
 
     editing: true,
@@ -40,6 +40,14 @@ window.scope = scope;
     cancel: function () {
       scope.editing = false;
       return false;
+    },
+
+    /**
+     * Returns the context from which the DataEntry should read values.
+     * @returns {*}
+     */
+    dataentryObjectGetter: function () {
+      return this.personEdit;
     },
 
     //the validation schema in this case is defined inside the scope

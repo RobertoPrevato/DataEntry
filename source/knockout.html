@@ -54,7 +54,7 @@
           <dt>Age</dt>
           <dd data-bind="text: person().age"></dd>
           <dt>Favorite band</dt>
-          <dd data-bind="text: person().favoriteBand"></dd>
+          <dd data-bind="text: person().band"></dd>
         </dl>
         <div class="buttons">
           <button class="btn" data-bind="click: edit">Edit</button>
@@ -72,7 +72,7 @@
           <input id="age-field" type="text" name="age" data-bind="value: age" /><br />
 
           <label for="favorite-band-field">Favorite band</label>
-          <input id="favorite-band-field" type="text" name="band" data-bind="value: favoriteBand" /><br />
+          <input id="favorite-band-field" type="text" name="band" data-bind="value: band" /><br />
           <em>Automatic formatting is applied to name and favorite band (trimming, and remotion of multiple spaces).</em><br />
         </fieldset>
         <fieldset class="buttons">
@@ -125,7 +125,7 @@
         this.personEdit = ko.observable({
           name: "",
           age: "",
-          favoriteBand: ""
+          band: ""
         });
       },
       save: function () {
@@ -165,13 +165,12 @@
           validation: ["required"],
           format: ["cleanSpaces"]
         }
-      }/*,
+      },
 
       //Example: if it desired to read the values from the model, uncomment the following 3 lines
       dataentryObjectGetter: function () {
         return this.personEdit;
       }
-      */
     });
 
     //create instance of view model
@@ -179,14 +178,14 @@
       person: {
         name: "",
         age: "",
-        favoriteBand: ""
+        band: ""
       },
       editing: true,
       cancelActive: false
     });
 
     //Example: if it desired to read the values from the model, uncomment the following line, to use the ContextHarvester
-    //$.Forms.DataEntry.prototype.harvesterType = $.Forms.Harvesting.ContextHarvester;
+    Forms.DataEntry.prototype.harvesterType = Forms.Harvesting.ContextHarvester;
 
     //apply binding
     ko.applyBindings(instance, document.getElementById("partial"));

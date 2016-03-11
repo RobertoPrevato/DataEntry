@@ -53,7 +53,7 @@
           <dt>Age</dt>
           <dd>{{person.age}}</dd>
           <dt>Favorite band</dt>
-          <dd>{{person.favoriteBand}}</dd>
+          <dd>{{person.band}}</dd>
         </dl>
         <div class="buttons">
           <button class="btn" ng-click="edit()">Edit</button>
@@ -70,7 +70,7 @@
             <input id="age" type="text" name="age" ng-model="personEdit.age" /><br />
 
             <label for="favorite-band">Favorite band</label>
-            <input id="favorite-band" type="text" name="band" ng-model="personEdit.favoriteBand" /><br />
+            <input id="favorite-band" type="text" name="band" ng-model="personEdit.band" /><br />
             <em>Automatic formatting is applied to name and favorite band (trimming, and remotion of multiple spaces).</em>
           </fieldset>
           <fieldset class="buttons">
@@ -89,7 +89,7 @@
           <li>The first invalid field is automatically focused upon validation.</li>
         </ol>
       </div>
-    </div>
+  </div>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <!-- angular -->
