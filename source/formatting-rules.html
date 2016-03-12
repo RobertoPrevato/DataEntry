@@ -21,7 +21,7 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="styles/public.css">
 </head>
-<body>
+<body class="multiple">
 <header id="header">
   <div id="logo-region">
     <img src="styles/logo.png" alt="Roberto Prevato" width="91" height="50">
@@ -29,23 +29,22 @@
       <h6>Roberto Prevato - roberto.prevato@gmail.com</h6>
     </a>
   </div>
-  <h1>DataEntry - conditional rules</h1>
+  <h1>DataEntry - one to many relationships</h1>
 </header>
 <div>
   <ul id="main-menu" class="nav nav-pills nav-stacked">
     <li>
       <a href="index.html">Basic example</a>
     </li>
-    <li class="active">
+    <li>
       <a href="conditional-rules.html">Conditional rules</a>
     </li>
-    <li>
+    <li class="active">
       <a href="formatting-rules.html">Formatting rules</a>
     </li>
     <li>
       <a href="multiple-fields.html">Multiple fields</a>
-    </li>
-    <!--
+    </li><!--
     <li>
       <a href="contextual.html">Contextual</a>
     </li>-->
@@ -60,24 +59,22 @@
     </li>-->
   </ul>
   <div id="partial" class="ug-dataentry">
-    <form id="test-form" method="post" action="?" action="?" autocomplete="off">
+    <form id="example-form" method="post" action="?" action="?" autocomplete="off">
       <fieldset>
         <legend>Basic example</legend>
-        <label for="light-side">Light side of the force:</label>
-        <input id="light-side" type="radio" value="light" name="force-side" /><br />
-        <label for="dark-side">Dark side of the force:</label>
-        <input id="dark-side" type="radio" value="dark" name="force-side" /><br />
+        <label for="zero-field">Zero filled (10)</label>
+        <input id="zero-field" type="text" name="zero" maxlength="10" /><br />
 
-        <label for="fav-jedi">Favorite Jedi (required if you choose the Light side):</label>
-        <input id="fav-jedi" type="text" name="fav-jedi" /><br />
-
-        <label for="fav-sith">Favorite Sith (required if you choose the Dark side):</label>
-        <input id="fav-sith" type="text" name="fav-sith" /><br />
-
+        <label for="zero-field-1">Zero filled (5)</label>
+        <input id="zero-field-1" type="text" name="zero" maxlength="5" /><br />
       </fieldset>
       <fieldset class="buttons">
         <button class="submit btn">Validate form</button>
-        <p>In this example, the favored Jedi field is required if the light side of the force is selected; otherwise the favored Sith is required.</p>
+        <p>In this example, the input fields are formatted automatically upon focus and blur (zero-filled and zero-unfilled).</p>
+        <ol>
+          <li>Upon focus, the zero-unfill preformatter, removes the leading "0"</li>
+          <li>Upon blur after successful validation, the zero-fill formatter adds "0"</li>
+        </ol>
       </fieldset>
     </form>
   </div>
@@ -102,39 +99,56 @@
 <script type="text/javascript">
   (function () {
 
+    var setValue = Forms.Formatting.SetValue;
+
+    Forms.Formatting.Rules["zero-fill"] = {
+      fn: function (field, value) {
+        if (!value) return;
+        var ml = field.getAttribute("maxlength");
+        if (!ml) throw "maxlength is required for the zero-fill formatter";
+
+        var l = parseInt(ml), original = value;
+        while (value.length < l) {
+          value = "0" + value;
+        }
+        if (original !== value) {
+          setValue(field, value);
+        }
+      }
+    };
+
+    Forms.Formatting.PreRules["zero-unfill"] = {
+      fn: function (field, value) {
+        if (!value) return;
+        if (/^0+/.test(value))
+          setValue(field, value.replace(/^0+/, ""));
+      }
+    };
+    //declare the dataentry
     var dataentry = new Forms.DataEntry({
-      element: document.getElementById("test-form"),
+      element: document.getElementById("example-form"),
       schema: {
-        "force-side": {
-          validation: ["required"]
-        },
-        "fav-jedi": {
-          validation: function () {
-            var side = this.getFieldValue("force-side");
-            return side == "light" ? ["required"] : ["none"];
-          }
-        },
-        "fav-sith": {
-          validation: function () {
-            var side = this.getFieldValue("force-side");
-            return side == "dark" ? ["required"] : ["none"];
-          }
+        zero: {
+          validation: ["required"],
+          format: ["zero-fill"],
+          preformat: ["zero-unfill"]
         }
       }
     });
 
-    var testForm = document.getElementById("test-form");
-    testForm.addEventListener("submit", function (e) {
+    var exampleForm = document.getElementById("example-form");
+    exampleForm.addEventListener("submit", function (e) {
       e.preventDefault();
       dataentry.validate().then(function (data) {
         if (data.valid)
-          console.log("valid!", data.values), alert("The form is valid!");
+          console.log("valid!", data.values);
         else
           console.log("form invalid!", data.errors);
       }, function (data) {
         console.log("validation failed!", data);
       });
     });
+
   })();
 </script>
 </body>

@@ -1704,7 +1704,7 @@
           var functionName = "preformat_" + x;
           o[ev] = functionName;
           self.fn[functionName] = function (e, forced) {
-            var el = e.currentTarget, name = attr(el, "name"), preformat = self.getFieldPreformatRules(name);
+            var el = e.target, name = attr(el, "name"), preformat = self.getFieldPreformatRules(name);
             for (var i = 0, l = preformat[LEN]; i < l; i++) {
               var a = preformat[i], rule = Forms.Formatting.PreRules[a];
               rule.fn.call(self.context || self, el, getValue(el));
