@@ -26,6 +26,9 @@
   height: 10px;
   position: relative;
 }
+
+@error: #aa0000;
+
 .validation-tooltip {
   position: absolute;
   z-index: 1070;
@@ -51,9 +54,21 @@
   top: -6px;
   min-width: 200px;
   left: 0%;
+  &.top {
+    padding: 5px 0;
+    margin-top: -3px;
+  }
   &.right {
     padding: 0 5px;
     margin-left: 3px;
+  }
+  &.bottom {
+    padding: 5px 0;
+    margin-top: 3px;
+  }
+  &.left {
+    padding: 0 5px;
+    margin-left: -3px;
   }
   &.in {
     opacity: 1;
@@ -72,7 +87,7 @@
     text-align: center;
     border-radius: 4px;
     margin: 1px 0px;
-    background-color: #aa0000;
+    background-color: @error;
     -webkit-box-shadow: 2px 2px 0px 0px #d9d9d9;
     -moz-box-shadow: 2px 2px 0px 0px #d9d9d9;
     box-shadow: 2px 2px 0px 0px #d9d9d9;
@@ -80,11 +95,60 @@
   &.right {
     .tooltip-arrow {
       top: 13px;
-      border-right-color: #aa0000;
+      border-right-color: @error;
       left: 0;
       margin-top: -5px;
       border-width: 5px 5px 5px 0;
     }
+  }
+  &.top .tooltip-arrow {
+    bottom: 0;
+    left: 50%;
+    margin-bottom: -5px;
+    border-width: 5px 5px 0;
+    border-top-color: @error;
+  }
+  &.top-left .tooltip-arrow {
+    left: 7px;
+    bottom: 1px;
+    margin-bottom: -5px;
+    border-width: 5px 5px 0;
+    border-top-color: @error;
+  }
+  &.top-right .tooltip-arrow {
+    bottom: 0;
+    right: 7px;
+    margin-bottom: -5px;
+    border-width: 5px 5px 0;
+    border-top-color: @error;
+  }
+  &.left .tooltip-arrow {
+    top: 50%;
+    right: 0;
+    margin-top: -5px;
+    border-width: 5px 0 5px 5px;
+    border-left-color: @error;
+  }
+  &.bottom .tooltip-arrow {
+    top: 0;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 0 5px 5px;
+    border-bottom-color: @error;
+  }
+  &.bottom-left .tooltip-arrow {
+    top: 0;
+    left: 7px;
+    margin-top: -5px;
+    border-width: 0 5px 5px;
+    border-bottom-color: #000;
+  }
+  &.bottom-right .tooltip-arrow {
+    top: 0;
+    right: 7px;
+    margin-top: -5px;
+    border-width: 0 5px 5px;
+    border-bottom-color: #000;
   }
 }
 

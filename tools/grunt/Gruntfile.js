@@ -5,6 +5,7 @@ module.exports = function (grunt) {
   var rel = "../../source";
   var lessFiles = {};
   lessFiles[rel + "/styles/public.css"] = rel + "/styles/public.less";
+  lessFiles[rel + "../../dist/dataentry.css"] = rel + "/styles/areas/controls/dataentry.less";
 
   var js = [
     "../../source/scripts/libs/dataentry.js"

@@ -45,24 +45,34 @@
   else if (global["I18n"]) I = global.I18n;
   else raise(2);
 
+  var OBJECT = "object",
+    STRING = "string",
+    NUMBER = "number",
+    FUNCTION = "function",
+    LEN = "length",
+    REP = "replace";
+  
   var undefined, _schema_ = "schema";
   function isString(s) {
-    return typeof s == "string";
+    return typeof s == STRING;
   }
   function isNumber(o) {
-    return typeof o == "number";
+    return typeof o == NUMBER;
   }
   function isFunction(o) {
-    return typeof o == "function";
+    return typeof o == FUNCTION;
   }
   function isObject(o) {
-    return typeof o == "object";
+    return typeof o == OBJECT;
   }
   var isArray = function (o) {
     return o instanceof Array;
   };
   function isPlainObject(o) {
-    return typeof o == "object" && o.constructor == Object;
+    return typeof o == OBJECT && o.constructor == Object;
+  }
+  function hasOwnProperty(o, n) {
+    return o && o.hasOwnProperty(n);
   }
   function toUpper(s) {
     return s.toUpperCase();
@@ -71,9 +81,15 @@
     return s.toLowerCase();
   }
   function first(a, fn) {
-    for (var i = 0, l = a.length; i < l; i++) {
+    for (var i = 0, l = a[LEN]; i < l; i++) {
       if (fn(a[i])) return a[i];
     }
+  }
+  function isElement(o){
+    return (
+      typeof HTMLElement === OBJECT ? o instanceof HTMLElement : //DOM2
+      o && typeof o === OBJECT && o !== null && o.nodeType === 1 && typeof o.nodeName === STRING
+    );
   }
   //utility functions
   Forms.Utils = {};
@@ -90,23 +106,23 @@
   var S = Forms.Utils.String = {
     format: function (s) {
       var args = Array.prototype.slice.call(arguments, 1);
-      return s.replace(/{(\d+)}/g, function (match, i) {
+      return s[REP](/{(\d+)}/g, function (match, i) {
         return typeof args[i] != "undefined" ? args[i] : match;
       });
     },
     trim: function (s) {
-      return isString(s) ? s.replace(/^[\s]+|[\s]+$/g, '') : s;
+      return isString(s) ? s[REP](/^[\s]+|[\s]+$/g, '') : s;
     },
     removeMultipleSpaces: function (s) {
-      return isString(s) ? s.replace(/\s{2,}/g, ' ') : s;
+      return isString(s) ? s[REP](/\s{2,}/g, ' ') : s;
     },
     removeLeadingSpaces: function (s) {
-      return isString(s) ? s.replace(/^\s+|\s+$/, '') : s;
+      return isString(s) ? s[REP](/^\s+|\s+$/, '') : s;
     },
     hyphenize: function (s) {
       if (!s) return "";
       while (/[A-Z]/.test(s))
-        s = s.replace(/([a-z]?)([A-Z])/g, function (a, b, c) { return b + (b ? "-" : "") + c.toLowerCase(); });
+        s = s[REP](/([a-z]?)([A-Z])/g, function (a, b, c) { return b + (b ? "-" : "") + c.toLowerCase(); });
       return s;
     }
   };
@@ -114,10 +130,10 @@
   function modClass(el, n, add) {
     if (n.search(/\s/) > -1) {
       n = n.split(/\s/g);
-      for (var i = 0, l = n.length; i < l; i ++) {
+      for (var i = 0, l = n[LEN]; i < l; i ++) {
         modClass(el, n[i], add);
       }
-    } else if (typeof n == "string") {
+    } else if (typeof n == STRING) {
       el.classList[add ? "add" : "remove"](n);
     }
     return el;
@@ -143,7 +159,7 @@
   function setValue(el, v) {
     if (el.value != v) {
       el.value = v;
-      el.dispatchEvent(new Event("change"));
+      el.dispatchEvent(new Event("change"), { forced: true });
     }
   }
   function getValue(el) {
@@ -197,7 +213,7 @@
     a.appendChild(b);
   }
   function toArray(a) {
-    if (typeof a == "object" && a.length)
+    if (typeof a == OBJECT && a[LEN])
       return map(a, function (o) { return o; });
     return Array.prototype.slice.call(arguments);
   }
@@ -212,14 +228,14 @@
         fn(a[x], x);
       return a;
     }
-    if (!a || !a.length) return a;
-    for (var i = 0, l = a.length; i < l; i++)
+    if (!a || !a[LEN]) return a;
+    for (var i = 0, l = a[LEN]; i < l; i++)
       fn(a[i], i);
   }
   function map(a, fn) {
-    if (!a || !a.length) return a;
+    if (!a || !a[LEN]) return a;
     var b = [];
-    for (var i = 0, l = a.length; i < l; i++)
+    for (var i = 0, l = a[LEN]; i < l; i++)
       b.push(fn(a[i]));
     return b;
   }
@@ -227,7 +243,7 @@
     return a.indexOf(o) > -1;
   }
   function any(a, fn) {
-    for (var i = 0, l = a.length; i < l; i++) {
+    for (var i = 0, l = a[LEN]; i < l; i++) {
       if (fn(a[i]))
         return true;
     }
@@ -235,7 +251,7 @@
   }
   function where(a, fn) {
     var b = [];
-    for (var i = 0, l = a.length; i < l; i++) {
+    for (var i = 0, l = a[LEN]; i < l; i++) {
       if (fn(a[i]))
         b.push(a[i]);
     }
@@ -249,9 +265,9 @@
           a[x] = o[x];
       }
     } else {
-      for (var i = 0, l = arr.length; i < l; i++) {
+      for (var i = 0, l = arr[LEN]; i < l; i++) {
         var p = arr[i];
-        if (o.hasOwnProperty(p))
+        if (hasOwnProperty(o, p))
           a[p] = o[p];
       }
     }
@@ -259,11 +275,12 @@
   }
   function extend() {
     var args = arguments;
-    if (!args.length) return;
-    if (args.length == 1) return args[0];
+    if (!args[LEN]) return;
+    if (args[LEN] == 1) return args[0];
     var a = args[0], b, x;
-    for (var i = 1, l = args.length; i < l; i++) {
+    for (var i = 1, l = args[LEN]; i < l; i++) {
       b = args[i];
+      if (!b) continue;
       for (x in b) {
         a[x] = b[x];
       }
@@ -342,7 +359,7 @@
       if (!el) el = self.element;
       //get all inputs
       var inputs = find(el, "input,select,textarea");
-      for (var i = 0, l = inputs.length; i < l; i++) {
+      for (var i = 0, l = inputs[LEN]; i < l; i++) {
         var input = inputs[i], name = attrName(input);
         if (name && !self.isSilent(input)) {
           o[name] = self.getValueFromElement(input);
@@ -366,6 +383,24 @@
      * @returns {*}
      */
     getValueFromElement: function (input) {
+      if (isNumber(input[LEN]) && !isElement(input)) {
+        if (!input[LEN]) return;
+        if (input[LEN] > 1) {
+          if (isRadioButton(input[0])) {
+            var checked = first(input, function (o) {
+              return o.checked;
+            });
+            return checked ? checked.value : undefined;
+          } else {
+            var v = [];
+            each(input, function (o) {
+              v.push(getValue(o));
+            });
+            return v;
+          }
+        }
+        input = input[0];
+      }
       var self = this, name = attrName(input);
       if (name && !self.isSilent(input)) {
         return getValue(input);
@@ -380,7 +415,7 @@
      */
     getFieldValue: function (name, field) {
       if (!name) raise(12);
-      return this.getValueFromElement(field ? field : findFirst(this.element, '[name="' + name + '"]'));
+      return this.getValueFromElement(field ? field : find(this.element, '[name="' + name + '"]'));
     }
   });
 
@@ -441,7 +476,7 @@
     getValuesFromContext: function (context) {
       var o = {}, schema = this.dataentry.schema, x;
       for (x in schema) {
-        if (context.hasOwnProperty(x)) {
+        if (hasOwnProperty(context, x)) {
           var val = unwrap(context[x]);
           o[x] = val;
         }
@@ -456,7 +491,7 @@
      */
     getFieldValue: function (name) {
       var context = this.getContext();
-      if (context.hasOwnProperty(name))
+      if (hasOwnProperty(context, name))
         return unwrap(context[name])
       return null;
     }
@@ -562,19 +597,41 @@
     },
 
     /**
+     * Gets the options to display a message on the given field.
+     * @param f
+     * @returns {*}
+     */
+    getOptions: function (f) {
+      var fs = this.dataentry.schema[f.name],
+        defaults = this.defaults,
+        messageOptions = fs ? fs.message : "right";
+      if (isString(messageOptions))
+        messageOptions = { position: messageOptions };
+      return extend({}, defaults, messageOptions);
+    },
+
+    /**
+     * The defaults parameters to display a message element.
+     */
+    defaults: {
+      position: "right"
+    },
+
+    /**
      * Gets an element that can be styled as tooltip
      * @param f
      * @param create
      * @returns {*}
      */
     getTooltipElement: function (f, create) {
-      var divtag = "div";
+      var divtag = "div",
+        o = this.getOptions(f);
         wrapper = createElement(divtag),
         tooltip = createElement(divtag),
         arrow = createElement(divtag),
         p = createElement("p");
       addClass(wrapper, "ug-validation-wrapper");
-      addClass(tooltip, "tooltip validation-tooltip right in");
+      addClass(tooltip, "tooltip validation-tooltip in " + o.position);
       addClass(arrow, "tooltip-arrow");
       addClass(p, "tooltip-inner");
       append(wrapper, tooltip);
@@ -693,13 +750,16 @@
   // Formatting rules and functions
   //
   var Formatting = Forms.Formatting = {
+
+    SetValue: setValue,
+
     //formatting rules to apply on blur, after successful validation
     Rules: {
       trim: {
         fn: function (field, value) {
           var rx = /^[\s]+|[\s]+$/g;
           if (value.match(rx)) {
-            setValue(field, value.replace(rx, ""));
+            setValue(field, value[REP](rx, ""));
           }
         }
       },
@@ -708,7 +768,7 @@
         fn: function (field, value) {
           var rx = /\s/g;
           if (value.match(rx)) {
-            setValue(field, value.replace(rx, ""));
+            setValue(field, value[REP](rx, ""));
           }
         }
       },
@@ -717,7 +777,7 @@
         fn: function (field, value) {
           var rx = /\s{2,}/g;
           if (value.match(rx)) {
-            setValue(field, value.replace(rx, " "));
+            setValue(field, value[REP](rx, " "));
           }
         }
       },
@@ -737,7 +797,7 @@
           if (!value) return;
           //remove leading zeros
           if (/^0+/.test(value))
-            setValue(field, value.replace(/^0+/, ""));
+            setValue(field, value[REP](/^0+/, ""));
         }
       }
     },
@@ -800,7 +860,7 @@
           raise(4, name);
         return self;
       }
-      for (var i = 0, l = rules.length; i < l; i++)
+      for (var i = 0, l = rules[LEN]; i < l; i++)
         self.format(rules[i], view, field, value);
       return self;
     },
@@ -831,6 +891,19 @@
   function match(s, rx) {
     return s.match(rx);
   }
+  //returns the value that a field will have, if the given keypress event goes through
+  function foreseeValue(e) {
+    var a = "selectionStart",
+      b = "selectionEnd",
+      element = e.target,
+      value = element.value,
+      c = e.keyCode || e.charCode,
+      key = String.fromCharCode(c),
+      selected = value.substr(element[a], element[b]),
+      beforeSelection = value.substr(0, element[a]),
+      afterSelection = value.substr(element[b], value.length);
+    return [beforeSelection, key, afterSelection].join("");
+  }
 
   //constraints: rules to disallows certain inputs
   var Constraints = Forms.Constraints = {
@@ -838,6 +911,8 @@
     PermittedCharacters: permittedCharacters,
 
     StringFromCode: stringFromCode,
+
+    ForeseeValue: foreseeValue,
 
     //allows to input only numbers
     integer: function (e, c) {
@@ -875,6 +950,8 @@
   Forms.Validation = {
 
     GetError: getError,
+
+    LocalizeError: localizeError,
 
     //basic validation rules
     Rules: {
@@ -962,7 +1039,7 @@
       maxLength: {
         fn: function (field, value, forced, limit) {
           if (!value) return true;
-          if (value.length > limit)
+          if (value[LEN] > limit)
             return getError(localizeError("maxLength", { length: limit }), arguments);
           return true;
         }
@@ -971,7 +1048,7 @@
       minLength: {
         fn: function (field, value, forced, limit) {
           if (!value) return true;
-          if (value.length < limit)
+          if (value[LEN] < limit)
             return getError(localizeError("minLength", { length: limit }), arguments);
           return true;
         }
@@ -1131,7 +1208,7 @@
       return wrap(f, function (func) {
         var args = toArray(arguments);
         return new Promise(function (resolve, reject) {
-          var result = func.apply(validator.context, args.slice(1, args.length));
+          var result = func.apply(validator.context, args.slice(1, args[LEN]));
           //NB: using Native Promise, we don't want to treat a common scenario like an invalid field as a rejection
           resolve(result);
         });
@@ -1145,7 +1222,7 @@
      * @returns {Window.Promise}
      */
     chain: function (queue) {
-      if (!queue.length)
+      if (!queue[LEN])
         return new Promise(function (resolve) { resolve([]); });
       //normalize queue
       queue = map(queue, function (o) {
@@ -1157,7 +1234,7 @@
       var i = 0,
         a = [],
         validator = this,
-        args = toArray(arguments).slice(1, arguments.length);
+        args = toArray(arguments).slice(1, arguments[LEN]);
       return new Promise(function (resolve, reject) {
         function success(data) {
           if (!data.field) {
@@ -1180,7 +1257,7 @@
         }
         function next() {
           i++;
-          if (i == queue.length) {
+          if (i == queue[LEN]) {
             //every single promise completed properly
             resolve(a);
           } else {
@@ -1315,7 +1392,7 @@
         Promise.all(chain).then(function (a) {
           var data = flatten(a);
           var errors = where(data, function (o) { return o && o.error; });
-          if (errors.length) {
+          if (errors[LEN]) {
             //focus the first invalid field
             errors[0].field.focus();
             //resolve with failur value
@@ -1361,7 +1438,7 @@
         raise(13, fieldName);
 
       var fields = options.elements ? options.elements : find(self.element, "[name='" + fieldName + "']");
-      if (!fields.length) return;
+      if (!fields[LEN]) return;
 
       var validator = self.validator,
         marker = validator.marker,
@@ -1381,7 +1458,7 @@
           p = validator.validate(validation, field, value).then(function (data) {
             //the validation process succeeded (didn't produce any exception)
             //but this doesn't mean that the field is valid:
-            for (var j = 0, q = data.length; j < q; j++) {
+            for (var j = 0, q = data[LEN]; j < q; j++) {
               var o = data[j];
               if (o.error) {
                 //field invalid
@@ -1580,12 +1657,12 @@
               var name = attr(f, "name"), format = self[_schema_][name].format;
               if (isFunction(format)) format = format.call(self.context || self, f, value);
               if (format) {
-                for (var i = 0, l = format.length; i < l; i++) {
+                for (var i = 0, l = format[LEN]; i < l; i++) {
                   self.formatter.format(format[i], self, f, value);
                 }
               } else if (self.options.allowImplicitFormat) {
                 //apply format rules implicitly
-                for (var i = 0, l = validation.length; i < l; i++) {
+                for (var i = 0, l = validation[LEN]; i < l; i++) {
                   var name = isString(validation[i]) ? validation[i] : validation[i].name;
                   if (name && self.formatter.rules[name])
                     self.formatter.format(name, self, f, value);
@@ -1596,7 +1673,7 @@
             //the validation process failed (it produced an exception)
             //this should happen, for example, when a validation rule that involves an Ajax request receives status 500 from the server side.
             if (!data) return;
-            for (var i = 0, l = data.length; i < l; i++) {
+            for (var i = 0, l = data[LEN]; i < l; i++) {
               if (!data[i] || data[i].error) {
                 //mark field invalid on the first validation dataentry failed
                 marker.markFieldInvalid(f, {
@@ -1621,14 +1698,14 @@
       for (x in schema) {
         //get preformat definition
         var preformat = self.getFieldPreformatRules(x);
-        if (preformat && preformat.length) {
+        if (preformat && preformat[LEN]) {
           var preformattingEvent = "focus",
             ev = self.string.format('{0} [name="{1}"]', preformattingEvent, x);
           var functionName = "preformat_" + x;
           o[ev] = functionName;
           self.fn[functionName] = function (e, forced) {
             var el = e.currentTarget, name = attr(el, "name"), preformat = self.getFieldPreformatRules(name);
-            for (var i = 0, l = preformat.length; i < l; i++) {
+            for (var i = 0, l = preformat[LEN]; i < l; i++) {
               var a = preformat[i], rule = Forms.Formatting.PreRules[a];
               rule.fn.call(self.context || self, el, getValue(el));
             }
@@ -1650,7 +1727,7 @@
       if (!preformat && self.options.allowImplicitFormat && !isFunction(fieldSchema.validation)) {
         preformat = [];
         var validation = self.getFieldValidationDefinition(fieldSchema.validation);
-        for (var i = 0, l = validation.length; i < l; i++) {
+        for (var i = 0, l = validation[LEN]; i < l; i++) {
           var n = validation[i].name || validation[i];
           if (Forms.Formatting.PreRules[n])
             preformat.push(n);
@@ -1680,7 +1757,7 @@
         var target = e.target,
           name = target.name;
         //on the other hand, we don't want to validate the whole form before the user trying to input anything
-        if (self[_schema_].hasOwnProperty(name)) {
+        if (hasOwnProperty(self[_schema_], name)) {
           //if the target is a radio button, then we need to trigger validation of all radio buttons with the same name
           var elementsToValidate = /radio/i.test(target.type)
             ? find(self.element, nameSelector(target))
@@ -1726,10 +1803,10 @@
             continue;
           }
 
-          for (var i = 0, l = validation.length; i < l; i++) {
+          for (var i = 0, l = validation[LEN]; i < l; i++) {
             //by definition validator entries can be string or objects with name property
             var validatorName = isString(validation[i]) ? validation[i] : validation[i].name;
-            if (self.formatter.rules.hasOwnProperty(validatorName) && !contains(format, validatorName)) {
+            if (hasOwnProperty(self.formatter.rules, validatorName) && !contains(format, validatorName)) {
               format.push(validatorName);
             }
           }
@@ -1756,7 +1833,7 @@
           //explicit constraint
           if (isFunction(constraint)) constraint = constraint.call(self.context || self);
           //constraint must be a single function name
-          if (Constraints.hasOwnProperty(constraint)) {
+          if (hasOwnProperty(Constraints, constraint)) {
             //set reference in events object
             o[ev] = functionName;
             //set function
@@ -1771,9 +1848,9 @@
           if (validation) {
             //implicit constraint
             if (isFunction(validation)) validation = validation.call(self.context || self);
-            for (var i = 0, l = validation.length; i < l; i++) {
+            for (var i = 0, l = validation[LEN]; i < l; i++) {
               var name = isString(validation[i]) ? validation[i] : validation[i].name;
-              if (Constraints.hasOwnProperty(name)) {
+              if (hasOwnProperty(Constraints, name)) {
                 //set reference in events object
                 o[ev] = functionName;
                 //set function

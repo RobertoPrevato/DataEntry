@@ -29,14 +29,14 @@
       <h6>Roberto Prevato - roberto.prevato@gmail.com</h6>
     </a>
   </div>
-  <h1>DataEntry - ES6 Promise based validation of fields and forms</h1>
+  <h1>DataEntry - conditional rules</h1>
 </header>
 <div>
   <ul id="main-menu" class="nav nav-pills nav-stacked">
-    <li class="active">
+    <li>
       <a href="index.html">Basic example</a>
     </li>
-    <li>
+    <li class="active">
       <a href="conditional-rules.html">Conditional rules</a>
     </li>
     <li>
@@ -55,47 +55,25 @@
       <a href="react.html">React</a>
     </li>-->
   </ul>
-  <div id="partial">
+  <div id="partial" class="ug-dataentry">
     <form id="test-form" method="post" action="?" action="?" autocomplete="off">
       <fieldset>
         <legend>Basic example</legend>
-        <label for="name-field">Username</label>
-        <input id="name-field" type="text" name="name" /><br />
-
-        <label for="year-field">Year (between 1900 and 2015)</label>
-        <input id="year-field" type="text" name="year" />
-        <br />
-
-        <label for="only-letters">A field that is not required, but accepts only letters</label>
-        <input id="only-letters" type="text" name="only-letters" /><br />
-
-        <label for="favored-food">Favored food</label>
-        <select id="favored-food" name="favored-food">
-          <option></option>
-          <optgroup label="Salty">
-            <option value="pizza">Pizza</option>
-            <option value="noodles">Noodles</option>
-            <option value="asado">Asado</option>
-            <option value="sushi">Sushi</option>
-          </optgroup>
-          <optgroup label="Sweets">
-            <option value="cheese-cake">Cheese cake</option>
-            <option value="chocolate">Chocolate</option>
-            <option value="marmalade">Marmalade</option>
-          </optgroup>
-        </select><br />
-
         <label for="light-side">Light side of the force:</label>
         <input id="light-side" type="radio" value="light" name="force-side" /><br />
         <label for="dark-side">Dark side of the force:</label>
         <input id="dark-side" type="radio" value="dark" name="force-side" /><br />
 
-        <label for="must-check" class="inline">A checkbox that must be checked (policy acceptance)</label>
-        <input id="must-check" type="checkbox" name="policy-read" /><br />
+        <label for="fav-jedi">Favorite Jedi (required if you choose the Light side):</label>
+        <input id="fav-jedi" type="text" name="fav-jedi" /><br />
+
+        <label for="fav-sith">Favorite Sith (required if you choose the Dark side):</label>
+        <input id="fav-sith" type="text" name="fav-sith" /><br />
 
       </fieldset>
       <fieldset class="buttons">
         <button class="submit btn">Validate form</button>
+        <p>In this example, the favored Jedi field is required if the light side of the force is selected; otherwise the favored Sith is required.</p>
       </fieldset>
     </form>
   </div>
@@ -123,24 +101,20 @@
     var dataentry = new Forms.DataEntry({
       element: document.getElementById("test-form"),
       schema: {
-        name: {
-          validation: ["required"],
-          format: ["cleanSpaces"]
-        },
-        year: {
-          validation: ["required", { name: "integer", params: [{ min: 1900, max: 2015 }] }]
-        },
-        "only-letters": {
-          validation: ["letters"]
-        },
-        "policy-read": {
-          validation: ["mustCheck"]
-        },
-        "favored-food": {
-          validation: ["required"]
-        },
         "force-side": {
           validation: ["required"]
+        },
+        "fav-jedi": {
+          validation: function () {
+            var side = this.getFieldValue("force-side");
+            return side == "light" ? ["required"] : ["none"];
+          }
+        },
+        "fav-sith": {
+          validation: function () {
+            var side = this.getFieldValue("force-side");
+            return side == "dark" ? ["required"] : ["none"];
+          }
         }
       }
     });

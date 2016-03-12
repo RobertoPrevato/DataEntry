@@ -16,6 +16,8 @@
     "canContainOnlyLetters": "The field can contain only letters",
     "canContainOnlyDigits": "The field can contain only digits",
     "mustBeChecked": "This must be checked",
-    "failedValidation": "An error occurred while performing validation"
+    "failedValidation": "An error occurred while performing validation",
+    "invalidEmail": "The email is not valid",
+    "invalidPhone": "The phone number is not valid"
   };
 })();

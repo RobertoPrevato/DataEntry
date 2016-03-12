@@ -1,0 +1,153 @@
+/**
+ * DataEntry v1.0.1, forms validation library that implements Promise based validation of fields and forms,
+ * automatic decoration of fields, localized error messages.
+ * https://github.com/RobertoPrevato/DataEntry
+ *
+ * Copyright 2016, Roberto Prevato
+ * http://ugrose.com
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+.ug-dataentry input[type=radio],
+.ug-dataentry input[type=checkbox] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  line-height: normal;
+  vertical-align: top;
+}
+.ug-validation-wrapper {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  position: relative;
+}
+.validation-tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: block;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: normal;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  line-break: auto;
+  top: -6px;
+  min-width: 200px;
+  left: 0%;
+}
+.validation-tooltip.top {
+  padding: 5px 0;
+  margin-top: -3px;
+}
+.validation-tooltip.right {
+  padding: 0 5px;
+  margin-left: 3px;
+}
+.validation-tooltip.bottom {
+  padding: 5px 0;
+  margin-top: 3px;
+}
+.validation-tooltip.left {
+  padding: 0 5px;
+  margin-left: -3px;
+}
+.validation-tooltip.in {
+  opacity: 1;
+}
+.validation-tooltip .tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.validation-tooltip .tooltip-inner {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  margin: 1px 0px;
+  background-color: #aa0000;
+  -webkit-box-shadow: 2px 2px 0px 0px #d9d9d9;
+  -moz-box-shadow: 2px 2px 0px 0px #d9d9d9;
+  box-shadow: 2px 2px 0px 0px #d9d9d9;
+}
+.validation-tooltip.right .tooltip-arrow {
+  top: 13px;
+  border-right-color: #aa0000;
+  left: 0;
+  margin-top: -5px;
+  border-width: 5px 5px 5px 0;
+}
+.validation-tooltip.top .tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-bottom: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #aa0000;
+}
+.validation-tooltip.top-left .tooltip-arrow {
+  left: 7px;
+  bottom: 1px;
+  margin-bottom: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #aa0000;
+}
+.validation-tooltip.top-right .tooltip-arrow {
+  bottom: 0;
+  right: 7px;
+  margin-bottom: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #aa0000;
+}
+.validation-tooltip.left .tooltip-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -5px;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #aa0000;
+}
+.validation-tooltip.bottom .tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #aa0000;
+}
+.validation-tooltip.bottom-left .tooltip-arrow {
+  top: 0;
+  left: 7px;
+  margin-top: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000;
+}
+.validation-tooltip.bottom-right .tooltip-arrow {
+  top: 0;
+  right: 7px;
+  margin-top: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000;
+}
+.ug-message-element {
+  display: inline-block;
+  padding-left: 15px;
+  font-size: 12px;
+}
+.ug-message-element.ui-error {
+  color: red;
+  font-style: italic;
+}
