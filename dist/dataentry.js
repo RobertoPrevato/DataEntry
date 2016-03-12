@@ -91,6 +91,16 @@
       o && typeof o === OBJECT && o !== null && o.nodeType === 1 && typeof o.nodeName === STRING
     );
   }
+  function normalizeRule(a, error) {
+    if (isString(a))
+      return { name: a };
+    if (isPlainObject(a)) {
+      var name = a.name;
+      if (!name) raise(error);
+      return a;
+    }
+    raise(14, name);
+  }
   //utility functions
   Forms.Utils = {};
 
@@ -850,18 +860,20 @@
      * @param value
      * @returns {Formatter}
      */
-    format: function (rules, view, field, value) {
+    format: function (rules, view, field, value, params) {
       var self = this;
       if (isString(rules)) {
         var name = rules;
         if (self.rules[name])
-          self.rules[name].fn.apply(view, [field, value]);
+          self.rules[name].fn.call(view, field, value, params);
         else
           raise(4, name);
         return self;
       }
-      for (var i = 0, l = rules[LEN]; i < l; i++)
-        self.format(rules[i], view, field, value);
+      for (var i = 0, l = rules[LEN]; i < l; i++) {
+        var a = normalizeRule(rules[i], 16);
+        self.format(a.name, view, field, value, a.params);
+      }
       return self;
     },
 
@@ -1657,11 +1669,9 @@
               var name = attr(f, "name"), format = self[_schema_][name].format;
               if (isFunction(format)) format = format.call(self.context || self, f, value);
               if (format) {
-                for (var i = 0, l = format[LEN]; i < l; i++) {
-                  self.formatter.format(format[i], self, f, value);
-                }
+                self.formatter.format(format, self, f, value);
               } else if (self.options.allowImplicitFormat) {
-                //apply format rules implicitly
+                //apply format rules implicitly (in this case, there are no parameters)
                 for (var i = 0, l = validation[LEN]; i < l; i++) {
                   var name = isString(validation[i]) ? validation[i] : validation[i].name;
                   if (name && self.formatter.rules[name])
@@ -1706,8 +1716,9 @@
           self.fn[functionName] = function (e, forced) {
             var el = e.target, name = attr(el, "name"), preformat = self.getFieldPreformatRules(name);
             for (var i = 0, l = preformat[LEN]; i < l; i++) {
-              var a = preformat[i], rule = Forms.Formatting.PreRules[a];
-              rule.fn.call(self.context || self, el, getValue(el));
+              var a = normalizeRule(preformat[i], 16);
+              var rule = Forms.Formatting.PreRules[a.name];
+              rule.fn.call(self.context || self, el, getValue(el), a.params);
             }
           };
         }
