@@ -33,7 +33,7 @@ ko.bindingHandlers.dataentry = {
     if (!viewModel[fn])
       viewModel[fn] = function (params) {
       return this.dataentry.validate(params, {
-        onlyIfTouched: true
+        onlyTouched: true
       });
     };
 

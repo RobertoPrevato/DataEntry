@@ -260,6 +260,7 @@
     return false;
   }
   function where(a, fn) {
+    if (!a || !a.length) return [];
     var b = [];
     for (var i = 0, l = a[LEN]; i < l; i++) {
       if (fn(a[i]))
@@ -1438,7 +1439,7 @@
       options = extend({
         elements: null,
         decorateField: true,
-        onlyIfTouched: false
+        onlyTouched: false
       }, options || {});
       var self = this, schema = self[_schema_];
       if (!fieldName)
@@ -1450,6 +1451,11 @@
         raise(13, fieldName);
 
       var fields = options.elements ? options.elements : find(self.element, "[name='" + fieldName + "']");
+      if (options.onlyTouched) {
+        fields = where(fields, function (o) {
+          return hasClass(o, "ug-touched");
+        });
+      }
       if (!fields[LEN]) return;
 
       var validator = self.validator,
@@ -1754,7 +1760,7 @@
     getMetaEvents: function () {
       var activationCallback = function (e) {
         //add a class to the element
-        this.formatter.marker.markFieldTouched(e.currentTarget);
+        this.formatter.marker.markFieldTouched(e.target);
         //activate validation after keypress
         this.validationActive = true;
         return true;
@@ -1762,7 +1768,7 @@
       var changeCallback = function (e, forced) {
         //add a class to the element
         var self = this;
-        self.formatter.marker.markFieldTouched(e.currentTarget);
+        self.formatter.marker.markFieldTouched(e.target);
         self.validationActive = true;
         //trigger validation
         var target = e.target,
