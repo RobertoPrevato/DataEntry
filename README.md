@@ -48,3 +48,6 @@ Other minor differences in respect of the previous version are:
 * support for Node/CommonJS and AMD loading
 * improved documentation
 * improved handling of radio input elements
+ 
+## Documentation
+Refer to [the wiki page](https://github.com/RobertoPrevato/DataEntry/wiki).
