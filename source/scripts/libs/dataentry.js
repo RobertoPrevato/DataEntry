@@ -536,6 +536,13 @@
   function checkElement(element) {
     var re = checkGroup.call(this, element);
     re = checkChosen.call(this, re);
+    //support radio and checkboxes before labels (decorate after labels)
+    if (/^radio|checkbox$/i.test(element.type)) {
+      var nx = next(element);
+      if (/label/i.test(nx.tagName) && element.id == attr(nx, "for")) {
+        return nx;
+      }
+    }
     return re;
   }
 
