@@ -166,7 +166,15 @@
   function nameSelector(el) {
     return  "[name='" + attrName(el) + "']";
   }
+  function isPassword(o) {
+    return isElement(o) && attr(o, "type") == "password";
+  }
   function setValue(el, v) {
+    if (el.type == "checkbox") {
+      el.checked = v == true || /1|true/.test(v);
+      el.dispatchEvent(new Event("change"), { forced: true });
+      return;
+    }
     if (el.value != v) {
       el.value = v;
       el.dispatchEvent(new Event("change"), { forced: true });
@@ -1342,7 +1350,7 @@
       //array of registered event handlers
       self.handlers = [];
       //apply automatic event handlers if this.element is defined
-      self.bindEvents().checkElement();
+      self.bindEvents().checkElement().restoreValues();
       addClass(self.element, "ug-dataentry");
       return self;
     },
@@ -1626,6 +1634,26 @@
     },
 
     /**
+     * Restore values that can be saved.
+     */
+    restoreValues: function () {
+      var self = this, element = self.element;
+      if (!element.dataset.memory) {
+        return self;
+      }
+      var schema = self[_schema_], x, field, storage = self.getStorage();
+      for (x in schema) {
+        var saved = storage.getItem(self.getMemoryKey(x));
+        if (saved) {
+          field = findFirst(element, "[name='" + x + "']");
+          if (field)
+            setValue(field, saved);
+        }
+      }
+      return self;
+    },
+
+    /**
      * Generates a dynamic definition of events to bind to the dataentry element
      * @returns {events|*|{}}
      */
@@ -1637,7 +1665,8 @@
       self.getValidationDefinition(),
       self.getPreFormattingDefinition(),
       self.getMetaEvents(),
-      self.getConstraintsDefinition());
+      self.getConstraintsDefinition(),
+      self.getMemoryDefinition());
       return events;
     },
 
@@ -1884,6 +1913,62 @@
           }
         }
       }
+      return o;
+    },
+
+    /**
+     * Returns the storage to be used when saving and restoring values.
+     */
+    getStorage: function () {
+      return sessionStorage;
+    },
+
+    /**
+     * Returns a key to save and restore values for a given name.
+     * The key returned by default (location.pathname + location.hash) is suitable for most scenarios.
+     */
+    getMemoryKey: function (name) {
+      var baseKey = location.pathname + location.hash;
+      return baseKey + ":::" + name;
+    },
+
+    /**
+     * Function used to store form values.
+     */
+    memorize: function (e) {
+      var self = this, schema = self[_schema_], storage = self.getStorage();
+      setTimeout(function () {
+        var element = e.target, name = attrName(element);
+        if (!name) return;
+        var fieldSchema = schema[name];
+        if (!fieldSchema || fieldSchema.mem === false) {
+          return;
+        }
+        if (isPassword(element)) return;
+        var val = getValue(element),
+          key = self.getMemoryKey(name);
+        storage.setItem(key, val);
+      }, 50);
+    },
+
+    /**
+     * Gets an "events" object for event handlers that allow to keep values in memory
+     * @returns {}
+     */
+    getMemoryDefinition: function () {
+      var self = this;
+      if (!self.element.dataset.memory || !self.getStorage())
+        // storage disabled
+        return null;
+      var memorize = self.memorize.bind(self);
+      return {
+        "keypress input,textarea": memorize,
+        "paste input,textarea": memorize,
+        "cut input,textarea": memorize,
+        "change select": memorize,
+        "change input[type='checkbox']": memorize,
+        "change input[type='radio']": memorize
+      };
       return o;
     },
 
