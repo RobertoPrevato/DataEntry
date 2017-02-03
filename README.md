@@ -40,7 +40,7 @@ The main differences with the previous version of the DataEntry library, are:
 * use of native Promise instead of jQuery 2.x Deferred
 
 Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should be used only for exceptional situations, the new implementation of DataEntry always resolve the promises utilized during the validation of fields and forms: returning a value indicating whether a form is valid or not.
-Therefore any rejection that may happen must be caused by an unhandled exception happened while applying validation logic, and is ultimately related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
+Therefore any rejection must be caused by an unhandled exception happened while applying validation logic, and is ultimately related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
 Furthermore, the native Promise doesn't feature `done` and `fail` functions: the success and failure callbacks are both passed to the `then` function instead.
 The logic to define validation, formatting, preformatting and constraints rules is unchanged.
 
