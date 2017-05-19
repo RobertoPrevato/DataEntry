@@ -2,7 +2,7 @@
  * DataEntry Knockout connector.
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2016, Roberto Prevato
+ * Copyright 2017, Roberto Prevato
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT

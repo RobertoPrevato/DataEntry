@@ -2,7 +2,7 @@
  * DataEntry Angular 1.x connector.
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2016, Roberto Prevato
+ * Copyright 2017, Roberto Prevato
  * http://ugrose.com
  *
  * Licensed under the MIT license:
