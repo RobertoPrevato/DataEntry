@@ -1,0 +1,77 @@
+{%- extends "layout.html" -%}
+{%- block title -%}
+  DataEntry 2.0.0
+{%- endblock -%}
+{%- block body -%}
+<header id="header">
+  <div id="logo-region">
+    <a href="/">
+      <img src="rp.png" alt="Roberto Prevato" width="91" height="50">
+    </a>
+    <h6><a href="https://github.com/RobertoPrevato/DataEntry">Roberto Prevato - roberto.prevato@gmail.com</a></h6>
+  </div>
+</header>
+{%- endblock -%}
+{%- block js -%}
+<script>
+
+class TestMarker {
+
+  constructor(obj) {
+    this.target = obj;
+    this.prefix = "_(deco)_";
+  }
+
+  markFieldNeutrum(name) {
+    this.target[this.prefix + name] = "neuter";
+  }
+
+  markFieldInvalid(name, error) {
+    this.target[this.prefix + name] = "invalid: " + error.message;
+  }
+
+  markFieldValid(name) {
+    this.target[this.prefix + name] = "valid";
+  }
+}
+
+
+class TestHarvester {
+
+  constructor(obj) {
+    this.source = obj;
+  }
+
+  getValues() {
+    return this.source;
+  }
+
+  getValue(name) {
+    return this.source[name];
+  }
+}
+
+var data = {
+  name: "Matteo",
+  age: "foo"
+};
+
+var a = new DataEntry({
+  schema: {
+    name: [{name: "not", params: ["Matteo"]}],
+    age: ["integer"]
+  },
+  marker: new TestMarker(data),
+  harvester: new TestHarvester(data)
+})
+
+a.validate().then(re => {
+  console.log(re, data)
+
+  //expect(data.success).toEqual(false, "Validation must fail")
+  //always()
+}, function () {
+  console.error("validation process failed");
+});
+</script>
+{%- endblock -%}
