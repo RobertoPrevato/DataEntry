@@ -231,8 +231,8 @@ class DataEntry extends EventsEmitter {
       var p;
       if (options.decorateField) {
         p = validator.validate(validation, field, value).then(function (data) {
-          //the validation process succeeded (didn't produce any exception)
-          //but this doesn't mean that the field is valid:
+          // the validation process succeeded (didn't produce any exception)
+          // but this doesn't mean that the field is valid:
           for (var j = 0, q = data[LEN]; j < q; j++) {
             var o = data[j];
             if (o.error) {
@@ -244,6 +244,9 @@ class DataEntry extends EventsEmitter {
               return data;
             }
           }
+          // the field is valid; its value can be formatted;
+          self.onGoodValidation(fieldSchema, field, fieldName, value);
+
           marker.markFieldValid(field);
           return data;
         }, function (arr) {
@@ -261,13 +264,39 @@ class DataEntry extends EventsEmitter {
       }
       chain.push(p);
     });
-    //NB: the chain can contain more than one element, when a fieldset contains multiple elements with the same name
-    //(which is proper HTML and relatively common scenario)
+    // NB: the chain can contain more than one element, when a fieldset contains multiple elements with the same name
+    // (which is proper HTML and relatively common scenario)
     return new Promise(function (resolve, reject) {
       Promise.all(chain).then(function () {
         resolve(_.toArray(arguments));
       });
     });
+  }
+
+  onGoodValidation(fieldSchema, field, fieldName, value) {
+    var self = this;
+    var format = fieldSchema.format, validation = fieldSchema.validation;
+    if (isFunction(format)) format = format.call(self, f, value);
+    
+    var formattedValue = value;
+    if (format) {
+      formattedValue = self.formatter.format(format, field, value);
+    } else if (self.options.useImplicitFormat) {
+      // apply format rules implicitly (in this case, there are no parameters)
+      var matchingFormatRule = [];
+      _.each(validation, rule => {
+        var name = isString(rule) ? rule : rule.name;
+        if (name && self.formatter.rules[name])
+          matchingFormatRule.push(name);
+      })
+      if (matchingFormatRule.length) {
+        formattedValue = self.formatter.format(name, field, value);
+      }
+    }
+    if (formattedValue !== value) {
+      self.harvester.setValue(field, formattedValue, self, fieldName);
+    }
+    return self;
   }
 
   /**

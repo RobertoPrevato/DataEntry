@@ -42,6 +42,10 @@ class TestHarvester {
     this.source = obj;
   }
 
+  setValue(name, value) {
+    this.source[name] = value;
+  }
+
   getValues() {
     return this.source;
   }
@@ -52,13 +56,18 @@ class TestHarvester {
 }
 
 var data = {
-  name: "Matteo",
+  name: "Matteoz",
   age: "foo"
 };
 
+DataEntry.Formatter.Rules.noIdiot = function (field, value) {
+  return value.replace("Matteoz", "Idiot!")
+}
+
 var a = new DataEntry({
   schema: {
-    name: [{name: "not", params: ["Matteo"]}],
+    name: {
+      validation: [{name: "not", params: ["Matteo"]}], format: ["trim", "noIdiot"]},
     age: ["integer"]
   },
   marker: new TestMarker(data),

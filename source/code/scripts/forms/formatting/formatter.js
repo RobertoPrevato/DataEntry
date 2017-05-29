@@ -23,6 +23,18 @@ const isFunction = _.isFunction;
 const isPlainObject = _.isPlainObject;
 
 
+function normalizeRule(a, error) {
+  if (isString(a))
+    return { name: a };
+  if (isPlainObject(a)) {
+    var name = a.name;
+    if (!name) raise(error);
+    return a;
+  }
+  raise(14, name);
+}
+
+
 class Formatter {
 
   /**
@@ -30,10 +42,9 @@ class Formatter {
    *
    * @param dataentry: instance of DataEntry.
    */
-  constructor(dataentry) {
+  constructor() {
     var rules = Formatter.Rules, self = this;
     self.rules = rules
-    self.dataentry = dataentry;
     return self;
   }
 
@@ -41,35 +52,32 @@ class Formatter {
    * Disposes of this formatter.
    */
   dispose() {
-    var self = this;
-    self.rules = self.dataentry = self.marker = null;
-    return self;
+    this.rules = null;
+    return this;
   }
 
   /**
    * Applies formatting rules on the given field.
    * 
    * @param rules
-   * @param view
    * @param field
    * @param value
    * @returns {Formatter}
    */
-  format(rules, view, field, value, params) {
+  format(rules, field, value, params) {
     var self = this;
     if (isString(rules)) {
-      var name = rules;
-      if (self.rules[name])
-        self.rules[name].fn.call(view, field, value, params);
-      else
-        raise(4, name);
-      return self;
+      var name = rules, rule = self.rules[name];
+      if (rule)
+        return (rule.fn || rule).call(self, field, value, params);
+      
+      raise(4, name);
     }
     for (var i = 0, l = rules[LEN]; i < l; i++) {
       var a = normalizeRule(rules[i], 16);
-      self.format(a.name, view, field, value, a.params);
+      value = self.format(a.name, field, value, a.params);
     }
-    return self;
+    return value;
   }
 }
 

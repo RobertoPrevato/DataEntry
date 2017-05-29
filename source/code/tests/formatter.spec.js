@@ -11,11 +11,14 @@
 
 import Formatter from "../scripts/forms/formatting/formatter"
 
+
 describe("Formatter", () => {
-  /*
-  it("must have a version number", () => {
-    var version = DataEntry.version;
-    expect(/\d\.\d\.\d/.test(version)).toEqual(true);
-  });
-  */
+
+  it("must format values by rule names", () => {
+    const a = new Formatter();
+
+    const formatted = a.format(["trim"], "name", "  Hello!  ");
+
+    expect(formatted).toEqual("Hello!")
+  })
 })

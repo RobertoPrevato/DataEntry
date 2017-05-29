@@ -43,3 +43,4 @@ node_modules
 *.sh.swp
 
 servers/flask/env/*
+httpdocs/*

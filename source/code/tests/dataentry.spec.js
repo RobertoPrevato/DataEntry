@@ -51,6 +51,10 @@ class TestHarvester {
     return o;
   }
 
+  setValue(name, value) {
+    this.source[name] = value;
+  }
+
   getValue(name) {
     return this.source[name];
   }
@@ -360,7 +364,7 @@ describe("DataEntry", () => {
     a.validate().then(results => {
       // validation must fail;
       expect(results.valid).toEqual(true, "Validation must succeed")
-
+      
       expect(typeof results.values).toEqual("object", "because this way works TestHarvester class!")
       expect(results.values.name).toEqual("Hello World")
       expect(results.values.key).toEqual("FOO")

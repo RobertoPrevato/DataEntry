@@ -1,6 +1,6 @@
 /**
  * DataEntry validator class.
- * https://github.com/RobertoPrevato/KingTable
+ * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato
  * https://robertoprevato.github.io
