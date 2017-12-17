@@ -97,7 +97,7 @@ class DomHarvester {
         // throw exception if any element is not a radio button:
         if (any(elements, el => {
           return !isRadioButton(el);
-        })) raise(18, `DOM contains input elements with name "${$.attrName(elements[0])}" and different type`);
+        })) raise(19, `DOM contains input elements with name "${$.attrName(elements[0])}" and different type`);
 
         var checked = first(elements, o => {
           return o.checked;
@@ -111,7 +111,7 @@ class DomHarvester {
         each(elements, o => {
           // throw exception if any element is not a radio button:
           if (!isCheckbox(o))
-            raise(18, `DOM contains input elements with name "${$.attrName(elements[0])}" and different type`);
+            raise(19, `DOM contains input elements with name "${$.attrName(elements[0])}" and different type`);
 
           if (o.checked) {
             v.push($.attr(o, "value"));

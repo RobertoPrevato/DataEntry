@@ -54,7 +54,7 @@ describe("DomHarvester", () => {
     })
   })
 
-  it("must get values depending on dataentry schema and input elements 'name'", () => {
+  it("must get values depending on dataentry schema and input elements 'name' (multiple inputs)", () => {
     var wrapper = arrange(`
     <input name="name" type="text" value="Zenyatta" />
     <input name="name" type="text" value="Mei" />

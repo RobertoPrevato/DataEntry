@@ -298,6 +298,15 @@ class DataEntry extends EventsEmitter {
     return isFunction(schema) ? schema.call(this.context || this) : schema;
   }
 
+  /**
+   * Get the value for the property with the given name. Proxy function to harvester getValue function.
+   * 
+   * @param {string} name 
+   */
+  getFieldValue(name) {
+    return this.harvester.getValue(name);
+  }
+
 }
 
 DataEntry.Validator = Validator;

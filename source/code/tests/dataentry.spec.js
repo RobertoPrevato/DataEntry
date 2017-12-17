@@ -409,6 +409,55 @@ describe("DataEntry", () => {
     }, noReject(always));
   })
 
+  it("must handle dynamic validation rules", always => {
+    var data = {
+      side: "dark"
+    };
+
+    var a = new DataEntry({
+      schema: {
+        "side": {
+          validation: ["required"]
+        },
+        "fav-jedi": {
+          validation: function () {
+            var side = this.getFieldValue("side");
+            return side == "light" ? ["required"] : ["none"];
+          }
+        },
+        "fav-sith": {
+          validation: function () {
+            var side = this.getFieldValue("side");
+            return side == "dark" ? ["required"] : ["none"];
+          }
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+    
+    a.validate().then(results => {
+      // validation must fail; a fav-sith is required
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_fav-sith"]).toEqual("invalid: requiredValue");
+      expect(data["_(deco)_fav-jedi"]).toEqual("valid");
+      expect(data["_(deco)_side"]).toEqual("valid");
+
+      // change side
+      data.side = "light";
+
+      a.validate().then(results => {
+        // validation must fail; a fav-sith is required
+        expect(results.valid).toEqual(false, "Validation must fail")
+        expect(data["_(deco)_fav-sith"]).toEqual("valid");
+        expect(data["_(deco)_fav-jedi"]).toEqual("invalid: requiredValue");
+        expect(data["_(deco)_side"]).toEqual("valid");
+  
+        always()
+      }, noReject(always));
+    }, noReject(always));
+  });
+
   it("must be disposable", () => {
     const data = {};
     var a = new DataEntry({

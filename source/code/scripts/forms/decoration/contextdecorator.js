@@ -34,7 +34,7 @@ class ContextDecorator {
     if (!dataentry)
       raise(17, "missing context for ContextDecorator (constructor parameter)")
     
-    var options = dataentry.options;
+    var options = dataentry.options || {};
     var obj = options.validationTarget || dataentry.context;
     if (!obj)
       raise(17, "missing context for ContextDecorator")
