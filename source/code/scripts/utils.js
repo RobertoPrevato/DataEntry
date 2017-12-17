@@ -190,52 +190,6 @@ function isUnd(x) {
   return typeof x === "undefined";
 }
 
-/**
- * Deep clones an item (except function types).
- */
-function clone(o) {
-  var x, a;
-  if (o === null) return null;
-  if (o === undefined) return undefined;
-  if (isObject(o)) {
-    if (isArray(o)) {
-      a = [];
-      for (var i = 0, l = o.length; i < l; i++) {
-        a[i] = clone(o[i]);
-      }
-    } else {
-      a = {};
-      var v;
-      for (x in o) {
-        v = o[x];
-        if (v === null || v === undefined) {
-          a[x] = v;
-          continue;
-        }
-        if (isObject(v)) {
-          if (isDate(v)) {
-            a[x] = new Date(v.getTime());
-          } else if (isRegExp(v)) {
-            a[x] = new RegExp(v.source, v.flags);
-          } else if (isArray(v)) {
-            a[x] = [];
-            for (var i = 0, l = v.length; i < l; i++) {
-              a[x][i] = clone(v[i]);
-            }
-          } else {
-            a[x] = clone(v);
-          }
-        } else {
-          a[x] = v;
-        }
-      }
-    }
-  } else {
-    a = o;
-  }
-  return a;
-}
-
 export default {
   extend() {
     var args = arguments;
@@ -312,8 +266,6 @@ export default {
   lower,
 
   upper,
-
-  clone,
 
   /**
    * Duck typing: checks if an object "Quacks like a Promise"
@@ -604,74 +556,6 @@ export default {
       var bargs = self.toArray(arguments);
       return fn.apply({}, args.concat(bargs));
     };
-  },
-
-  /**
-   * Quasi Pythonic object comparer
-   */
-  equal(a, b) {
-    var NONE = null, und, t = true, f = false, s = "";
-    if (a === b) return t;
-    if (a === und || b === und || a === NONE || b === NONE || a === t || b === t || a === f || b === f || a === s || b === s)
-      return false;
-    if (isArray(a)) {
-      if (isArray(b) && a[LEN] == b[LEN]) {
-        // like in Python: return true if all objects
-        // inside are equal, in the same order
-        var i, l = a[LEN];
-        for (i = 0; i < l; i++) {
-          if (!this.equal(a[i], b[i])) {
-            return f;
-          }
-        }
-        return t;
-      } else {
-        return f;
-      }
-    }
-    if (isNumber(a) || isString(a))
-      return a == b;
-    if (a === NONE && b === NONE)
-      return t;
-    if (a === und && b === und)
-      return t;
-    var x, q = 0, w = 0;
-    for (x in a) {
-      if (a[x] !== und)
-        q += 1;
-      if (!this.equal(a[x], b[x]))
-        return f;
-    }
-    for (x in b) {
-      if (b[x] !== und)
-        w += 1;
-    }
-    var diff = q == w;
-    return diff;
-  },
-
-  /**
-   * Given a list of arrays, returns a new list of columns obtained from them.
-   */
-  cols(a) {
-    if (!a || !a.length) return [];
-    var maxLength = this.max(a, x => { return x.length; });
-    var b = [], i, j, l = a.length;
-    for (j = 0; j < maxLength; j++) {
-      var col = [];
-      for (i = 0; i < l; i++) {
-        col.push(a[i][j]);
-      }
-      b.push(col);
-    }
-    return b;
-  },
-
-  /**
-   * Sorts an array of numbers in ascending order.
-   */
-  sortNums(a) {
-    return a.sort((i, j) => { if (i > j) return 1; if (i < j) return -1; return 0;});
   },
 
   /**
