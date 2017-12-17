@@ -60,21 +60,8 @@ class TestHarvester {
   }
 }
 
+import { noReject } from "./tests-utils"
 
-/**
- * Returns a function that ensures a promise is not rejected; and completes the test.
- * Validation process must not be rejected, because Promise should only be rejected in exceptional situations,
- * following the specification.
- * Ref. https://www.w3.org/2001/tag/doc/promises-guide#rejections-should-be-exceptional
- * 
- * @param {*} always 
- */
-function noReject(always) {
-  return function () {
-    expect(0).toEqual(1, "Validation process must not be rejected")
-    always()
-  }
-}
 
 
 const NOT_NAME = "Whatever";
@@ -435,7 +422,7 @@ describe("DataEntry", () => {
       marker: new TestMarker(data),
       harvester: new TestHarvester(data)
     })
-    
+
     a.validate().then(results => {
       // validation must fail; a fav-sith is required
       expect(results.valid).toEqual(false, "Validation must fail")
@@ -455,6 +442,49 @@ describe("DataEntry", () => {
   
         always()
       }, noReject(always));
+    }, noReject(always));
+  });
+
+  it("must run callbacks for dynamic validation rules in the context of DataEntry", always => {
+    var data = {};
+
+    var a = new DataEntry({
+      schema: {
+        "a": {
+          validation: function () {
+            expect(this).toBe(a);
+            return ["none"];
+          }
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+    
+    a.validate().then(results => {
+      always()
+    }, noReject(always));
+  });
+
+  it("must run callbacks for dynamic validation rules in the context of DataEntry (context specified by option)", always => {
+    var data = {};
+
+    var a = new DataEntry({
+      schema: {
+        "_": {
+          validation: function () {
+            expect(this).toBe(a.context);
+            return ["none"];
+          }
+        }
+      },
+      context: {},
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+    
+    a.validate().then(results => {
+      always()
     }, noReject(always));
   });
 

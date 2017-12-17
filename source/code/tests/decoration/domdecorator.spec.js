@@ -25,7 +25,7 @@ function arrange() {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
-    "class": "domdecorator-wrapper"
+    "class": "test-wrapper"
   });
   section.appendChild(wrapper);
   
@@ -44,7 +44,7 @@ function arrangeRadios() {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
-    "class": "domdecorator-wrapper"
+    "class": "test-wrapper"
   });
   section.appendChild(wrapper);
   
@@ -58,7 +58,7 @@ function arrangeWithTarget() {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
-    "class": "domdecorator-wrapper"
+    "class": "test-wrapper"
   });
   section.appendChild(wrapper);
   

@@ -26,6 +26,7 @@ const nextWithClass = $.nextWithClass;
 const createElement = $.createElement;
 const isRadioButton = $.isRadioButton;
 const nameSelector = $.nameSelector;
+const isHidden = $.isHidden;
 const findFirst = $.findFirst;
 const after = $.after;
 
@@ -53,7 +54,7 @@ function checkGroup(element) {
     // return the last radio button sibling;
     return $.lastSibling(element, sibling => {
       return isRadioButton(sibling);
-    }) || $.parent(element);
+    }) || element;
   }
   return element;
 }

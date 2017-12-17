@@ -38,6 +38,15 @@ class DomHarvester {
   }
 
   /**
+   * Returns the fields by name.
+   * 
+   * @param {*} name 
+   */
+  getFields(name) {
+    return $.find(this.element, $.nameSelector(name))
+  }
+
+  /**
    * Get all values for the underlying dataentry, depending on its schema and DOM element.
    */
   getValues() {
@@ -48,9 +57,16 @@ class DomHarvester {
     throw "not implemented";
   }
 
-  getValue(name) {
-    if (!name) raise(12);
-    return this.getValueFromElement(find(this.element, $.nameSelector(name)));
+  getValue(field) {
+    if (!field) raise(12);
+    if (_.isString(field))
+      return this.getValueFromElements(find(this.element, $.nameSelector(field)));
+    return getValue(field);
+  }
+
+  getKeys() {
+    var schema = this.dataentry.schema;
+    return _.keys(schema);
   }
 
   /**
@@ -61,9 +77,8 @@ class DomHarvester {
    */
   getValuesFromElement(element) {
     var self = this,
-      schema = self.dataentry.schema,
       element = self.element,
-      keys = _.keys(schema),
+      keys = self.getKeys(),
       values = {};
 
     // the schema has properties that should match `name` attributes of input elements (like in classic HTML)

@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-import Formatter from "../scripts/forms/formatting/formatter"
+import Formatter from "../../scripts/forms/formatting/formatter"
 
 
 describe("Formatter", () => {

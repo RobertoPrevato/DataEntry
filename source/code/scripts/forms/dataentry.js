@@ -26,7 +26,9 @@ const DEFAULTS = {
 
   formatter: Formatter,
 
-  validator: Validator
+  validator: Validator,
+
+  binder: null
 }
 
 const len = _.len;
@@ -43,6 +45,9 @@ const contains = _.contains;
 const flatten = _.flatten;
 
 function objOrInstance(v, dataentry) {
+  if (!v) 
+    return null;
+  
   if (v.prototype) {
     return new v(dataentry);
   }
@@ -82,10 +87,14 @@ class DataEntry extends EventsEmitter {
       raise(8, "missing options: " + missingTypes.join(", "))
     }
 
-    self.marker = objOrInstance(options.marker, self);
-    self.formatter = objOrInstance(options.formatter, self);
-    self.harvester = objOrInstance(options.harvester, self);
-    self.validator = objOrInstance(options.validator, self);
+    each([
+      "binder", 
+      "marker", 
+      "formatter", 
+      "harvester", 
+      "validator"], name => {
+      self[name] = objOrInstance(options[name], self);
+    })
   }
 
   /**
@@ -104,9 +113,14 @@ class DataEntry extends EventsEmitter {
    */
   dispose() {
     var self = this;
-    each(["marker", "formatter", "harvester", "validator"], name => {
+    each([
+      "binder", 
+      "marker", 
+      "formatter", 
+      "harvester", 
+      "validator"], name => {
       var o = self[name];
-      if (o.dispose)
+      if (o && o.dispose)
         o.dispose();
       self[name] = null;
     })
@@ -209,11 +223,11 @@ class DataEntry extends EventsEmitter {
       chain = [];
     
     each(fields, function (field) {
-      var value = self.harvester.getValue(fieldName, field);
+      var value = self.harvester.getValue(field);
 
       if (options.decorateField) {
         //mark field neutrum before validation
-        marker.markFieldNeutrum(fieldName, field);
+        marker.markFieldNeutrum(field);
       }
       var p;
       if (options.decorateField) {
@@ -289,10 +303,10 @@ class DataEntry extends EventsEmitter {
 
   /**
    * Gets an array of validations to apply on a field.
-     * it supports the use of arrays or functions, which return arrays.
-     * 
-     * @param schema
-     * @returns {Array}
+   * it supports the use of arrays or functions, which return arrays.
+   * 
+   * @param schema
+   * @returns {Array}
    */
   getFieldValidationDefinition(schema) {
     return isFunction(schema) ? schema.call(this.context || this) : schema;
@@ -306,13 +320,12 @@ class DataEntry extends EventsEmitter {
   getFieldValue(name) {
     return this.harvester.getValue(name);
   }
-
 }
 
 DataEntry.Validator = Validator;
 DataEntry.Formatter = Formatter;
 DataEntry.defaults = DEFAULTS;
-DataEntry.baseProperties = ["element", "schema", "context", "events"];
+DataEntry.baseProperties = ["element", "schema", "context"];
 
 if (typeof window != "undefined") {
   window.DataEntry = DataEntry;

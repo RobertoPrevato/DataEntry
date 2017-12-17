@@ -25,7 +25,7 @@ function arrange(innerHtml, comment) {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
-    "class": "domharvester-wrapper"
+    "class": "test-wrapper"
   });
   wrapper.innerHTML = comment ? `<h2 class="info">${comment}</h2>` + innerHtml : innerHtml;
   section.appendChild(wrapper);

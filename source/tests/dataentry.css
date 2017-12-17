@@ -44,9 +44,7 @@
   filter: alpha(opacity=0);
   opacity: 0;
   line-break: auto;
-  top: -6px;
   min-width: 200px;
-  left: 0%;
 }
 .validation-tooltip.top {
   padding: 5px 0;
@@ -55,6 +53,8 @@
 .validation-tooltip.right {
   padding: 0 5px;
   margin-left: 3px;
+  top: -6px;
+  left: 0%;
 }
 .validation-tooltip.bottom {
   padding: 5px 0;
@@ -63,6 +63,8 @@
 .validation-tooltip.left {
   padding: 0 5px;
   margin-left: -3px;
+  top: -6px;
+  right: 0%;
 }
 .validation-tooltip.in {
   opacity: 1;
