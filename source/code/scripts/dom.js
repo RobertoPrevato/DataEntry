@@ -90,6 +90,14 @@ function nextWithClass(el, n) {
   var a = el.nextElementSibling;
   return hasClass(a, n) ? a : undefined;
 }
+function lastSibling(el, fn) {
+  var nx = el;
+  while (nx = nx.nextElementSibling) {
+    if (fn(nx))
+      break;
+  }
+  return nx;
+}
 function prev(el) {
   return el.previousElementSibling;
 }
@@ -114,6 +122,9 @@ function after(a, b) {
 }
 function append(a, b) {
   a.appendChild(b);
+}
+function parent(el) {
+  return el.parentElement || el.parentNode;
 }
 function isElement(o) {
   return (
@@ -503,5 +514,9 @@ export default {
 
   nextWithClass,
 
-  nameSelector
+  nameSelector,
+
+  lastSibling,
+
+  parent
 };

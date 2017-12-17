@@ -1,5 +1,7 @@
 /**
  * Tests for built-in DomDecorator class.
+ * Use `npm run karchrome` to debug and see a visual representation of these tests.
+ * 
  * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato
@@ -44,6 +46,21 @@ function arrangeRadios() {
   wrapper.innerHTML = `<label for="light-side">Favorite side of the force</label>
   <input type="radio" name="side" id="light-side" />
   <input type="radio" name="side" id="dark-side" />`;
+  return wrapper;
+}
+
+function arrangeWithTarget() {
+  var wrapper = $.createElement("div")
+  $.setAttr(wrapper, {
+    "id": _.uniqueId(),
+    "class": "domdecorator-wrapper"
+  });
+  document.body.appendChild(wrapper);
+  
+  wrapper.innerHTML = `
+  <input type="text" name="foo" id="with-target" data-validation-target="val-target" />
+  <br/>
+  <span id="val-target">This is the target of validated element</span>`;
   return wrapper;
 }
 
@@ -205,7 +222,6 @@ describe("DomDecorator", () => {
   })
 
   it("must display messages on the label of radio buttons", () => {
-    // TODO: handle displaying of tooltips on radio buttons!
     // arrange
     var wrapper = arrangeRadios();
     var text = "I find your lack of faith disturbing.";
@@ -215,12 +231,55 @@ describe("DomDecorator", () => {
       message: text
     })
 
+    // by default, the tooltip must be displayed after the last radio button:
+    var tooltipElement = getValidationWrapper(wrapper);
+    expect(tooltipElement.previousElementSibling).toEqual(document.getElementById("dark-side"));
+  })
+
+  it("must let specify decoration targets", () => {
+    // arrange
+    var wrapper = arrangeWithTarget();
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid(document.getElementById("with-target"), {
+      message: text
+    })
+
     // assert
     var tooltipElement = getValidationWrapper(wrapper);
-    expect(tooltipElement).toBeDefined();
+    expect(tooltipElement.previousElementSibling).toEqual(wrapper.querySelector("#val-target"));
+  })
 
-    var messageElement = getTooltipInner(tooltipElement);
-    expect(messageElement).toBeDefined();
-    expect(messageElement.innerText).toEqual(text);
+  it("must clear validation information, when fields are in neutral state", () => {
+    // arrange
+    var [wrapper, input] = arrange();
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid(input, {
+      message: text
+    })
+    decorator.markFieldNeutrum(input);
+
+    // assert
+    var tooltipElement = getValidationWrapper(wrapper);
+    expect(tooltipElement).toBeNull();
+  })
+
+  it("must clear validation information, when fields are in valid state", () => {
+    // arrange
+    var [wrapper, input] = arrange();
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid(input, {
+      message: text
+    })
+    decorator.markFieldValid(input);
+
+    // assert
+    var tooltipElement = getValidationWrapper(wrapper);
+    expect(tooltipElement).toBeNull();
   })
 })

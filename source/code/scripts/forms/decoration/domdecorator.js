@@ -19,6 +19,8 @@ const extend = _.extend;
 const isString = _.isString;
 const append = $.append;
 const addClass = $.addClass;
+const removeClass = $.removeClass;
+const removeElement = $.remove.bind($);
 const next = $.next;
 const nextWithClass = $.nextWithClass;
 const createElement = $.createElement;
@@ -27,30 +29,40 @@ const nameSelector = $.nameSelector;
 const findFirst = $.findFirst;
 const after = $.after;
 
-
-//support for chosen js when marking fields invalid or valid
+// support for explicitly defined targets through data attributes
+function checkSpecificTarget(element) {
+  var specificTarget = element.dataset.validationTarget;
+  if (specificTarget) 
+    return document.getElementById(specificTarget);
+}
+// support for chosen js when marking fields invalid or valid
 function checkChosen(element) {
-  //fix for chosen selects
+  // fix for chosen selects
   if (!element) return;
   if (/select/i.test(element.tagName) && isHidden(element) && hasClass(element, "chosen-select")) {
-    //replace the element with the chosen element
+    // replace the element with the chosen element
     return next(element);
   }
   return element;
 }
 // when a field relates to a group, then it make sense to display information only on the first element of the group.
 // a common case for this situation are radio buttons: if a value coming from a group of radio buttons is required,
-// then it makes sense to display information only on the first one
+// then it makes sense to display information only on the first one;
 function checkGroup(element) {
   if (isRadioButton(element)) {
-    return element;
-    //return only the first radio that appears in the DOM
-    return find(this.dataentry.element, nameSelector(element))[0];
+    // return the last radio button sibling;
+    return $.lastSibling(element, sibling => {
+      return isRadioButton(sibling);
+    }) || $.parent(element);
   }
   return element;
 }
 
 function checkElement(element) {
+  var specificTarget = checkSpecificTarget(element);
+  if (specificTarget)
+    return specificTarget;
+  
   var re = checkGroup.call(this, element);
   re = checkChosen.call(this, re);
   // support radio and checkboxes before labels (decorate after labels)
@@ -177,7 +189,7 @@ class DomDecorator {
    */
   removeMessageElement(f) {
     var self = this;
-    self.checkElement.call(self, f);
+    f = checkElement.call(self, f);
     var l = self.getMessageElement(f, false);
     if (l)
       removeElement(l);
