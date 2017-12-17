@@ -1,6 +1,6 @@
 /**
  * Decorator class using HTML elements: the simplest marker possible, displaying information 
- * by injecting or removing simple elements inside the DOM.
+ * by injecting or removing elements inside the DOM.
  * 
  * https://github.com/RobertoPrevato/DataEntry
  *

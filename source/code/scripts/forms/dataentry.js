@@ -13,7 +13,6 @@ import raise from "../../scripts/raise"
 import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"
-import { debug } from "util";
 
 const VERSION = "2.0.0"
 

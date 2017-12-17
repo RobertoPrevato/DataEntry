@@ -9,7 +9,6 @@
  * http://www.opensource.org/licenses/MIT
  */
 import DataEntry from "../scripts/forms/dataentry"
-import { debug } from "util";
 
 
 // Following marker and harvester are used for testing purpose

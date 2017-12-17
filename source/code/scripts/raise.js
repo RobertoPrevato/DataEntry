@@ -21,10 +21,3 @@ export default function raise(err, detail) {
   }
   throw new Error(message);
 }
-
-/*
-----------------------------------------------------
-Errors
-----------------------------------------------------
-1. Missing Promise implementation.
-*/

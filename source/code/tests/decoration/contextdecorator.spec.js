@@ -136,7 +136,7 @@ describe("ContextDecorator", () => {
     });
   })
 
-  it("must clear field information for valid values (setter style)", () => {
+  it("must clear field information for neutral fields (setter style)", () => {
     var v;
     const decorator = new ContextDecorator({
       options: {
