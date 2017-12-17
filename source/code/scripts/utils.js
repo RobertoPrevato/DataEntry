@@ -8,16 +8,19 @@
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
  */
+// 
 const OBJECT = "object",
   STRING = "string",
   NUMBER = "number",
   FUNCTION = "function",
   LEN = "length",
   REP = "replace";
+
 import {
   ArgumentException,
   ArgumentNullException
 } from "../scripts/exceptions"
+
 function map(a, fn) {
   if (!a || !a[LEN]) {
     if (isPlainObject(a)) {
@@ -33,6 +36,7 @@ function map(a, fn) {
     b.push(fn(a[i]));
   return b;
 }
+
 function each(a, fn) {
   if (isPlainObject(a)) {
     for (var x in a)
@@ -43,13 +47,16 @@ function each(a, fn) {
   for (var i = 0, l = a[LEN]; i < l; i++)
     fn(a[i], i);
 }
+
 function exec(fn, j) {
   for (var i = 0; i < j; i++)
     fn(i);
 }
+
 function isString(s) {
   return typeof s == STRING;
 }
+
 function isNumber(o) {
   // in JavaScript NaN (Not a Number) if of type "number" (curious..)
   // However, when checking if something is a number it's desirable to return
@@ -59,24 +66,31 @@ function isNumber(o) {
   }
   return typeof o == NUMBER;
 }
+
 function isFunction(o) {
   return typeof o == FUNCTION;
 }
+
 function isObject(o) {
   return typeof o == OBJECT;
 }
+
 function isArray(o) {
   return o instanceof Array;
 }
+
 function isDate(o) {
   return o instanceof Date;
 }
+
 function isRegExp(o) {
   return o instanceof RegExp;
 }
+
 function isPlainObject(o) {
   return typeof o == OBJECT && o !== null && o.constructor == Object;
 }
+
 function isEmpty(o) {
   if (!o) return true;
   if (isArray(o)) {
@@ -97,15 +111,19 @@ function isEmpty(o) {
   }
   throw new Error("invalid argument");
 }
+
 function hasOwnProperty(o, n) {
   return o && o.hasOwnProperty(n);
 }
+
 function upper(s) {
   return s.toUpperCase();
 }
+
 function lower(s) {
   return s.toLowerCase();
 }
+
 function first(a, fn) {
   if (!fn) {
     return a ? a[0] : undefined;
@@ -114,25 +132,30 @@ function first(a, fn) {
     if (fn(a[i])) return a[i];
   }
 }
+
 function toArray(a) {
   if (isArray(a)) return a;
   if (typeof a == OBJECT && a[LEN])
     return map(a, function (o) { return o; });
   return Array.prototype.slice.call(arguments);
 }
+
 function flatten(a) {
   if (isArray(a))
     return [].concat.apply([], map(a, flatten));
   return a;
 }
+
 var _id = -1;
 function uniqueId(name) {
   _id++;
   return (name || "id") + _id;
 }
+
 function resetSeed() {
   _id = -1;
 }
+
 function keys(o) {
   if (!o) return [];
   var x, a = [];
@@ -141,6 +164,7 @@ function keys(o) {
   }
   return a;
 }
+
 function values(o) {
   if (!o) return [];
   var x, a = [];
@@ -149,6 +173,7 @@ function values(o) {
   }
   return a;
 }
+
 function minus(o, props) {
   if (!o) return o;
   if (!props) props = [];
@@ -160,9 +185,11 @@ function minus(o, props) {
   }
   return a;
 }
+
 function isUnd(x) {
   return typeof x === "undefined";
 }
+
 /**
  * Deep clones an item (except function types).
  */
@@ -738,5 +765,23 @@ export default {
       case 3: fn.call(ctx, args[0], args[1], args[2]); return;
       default: fn.apply(ctx, args);
     }
+  },
+
+  /**
+   * Returns the lenght of the given variable.
+   * Handles array, object keys, string and any other object with length property.
+   * 
+   * @param {*} o 
+   */
+  len(o) {
+    if (!o) return 0;
+    if (isPlainObject(o)) {
+      var i = 0;
+      for (let x in o) {
+        i++;
+      }
+      return i;
+    }
+    return hasOwnProperty(o, "length") ? o.length : undefined;
   }
 };

@@ -1,6 +1,6 @@
 /**
- * DataEntry core class.
- * https://github.com/RobertoPrevato/KingTable
+ * DataEntry class.
+ * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato
  * https://robertoprevato.github.io
@@ -13,14 +13,12 @@ import raise from "../../scripts/raise"
 import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"
+import { debug } from "util";
 
 const VERSION = "2.0.0"
 
-// TODO: format values after successful validation
-//
 
 const DEFAULTS = {
-
   // Whether to enable implicit constraints by match with validator names
   useImplicitConstraints: true,
 
@@ -30,11 +28,9 @@ const DEFAULTS = {
   formatter: Formatter,
 
   validator: Validator
-
 }
 
-
-const LEN = "length";
+const len = _.len;
 const isString = _.isString;
 const isPlainObject = _.isPlainObject;
 const isFunction = _.isFunction;
@@ -47,22 +43,6 @@ const pick = _.pick;
 const contains = _.contains;
 const flatten = _.flatten;
 
-
-/** 
- * Notes:
- * 0. DataEntry (promise black magic)
- * 
- * 1. harvester (collects values for properties, by name)
- *    Example: DomHarvester (collects values from input elements by name)
- *             ReactStateHarvester (collects values from state)
- *    
- * 2. marker (marks properties invalid, by name)
- *    Example: TooltipMarker (marks fields using tooltips)
- *             ReactStateMarker (marks state)
- * 
- * 3. formatter (business logic to apply formatting after successful validation)
- * 
-*/
 function objOrInstance(v, dataentry) {
   if (v.prototype) {
     return new v(dataentry);
@@ -85,11 +65,13 @@ class DataEntry extends EventsEmitter {
    */
   constructor(options) {
     super();
-    this.rules = DataEntry.rules; // TODO!
+    
     if (!options) raise(8, "missing options"); // missing options
     if (!options.schema) raise(8, "missing schema"); // missing schema
 
     var self = this, baseProperties = DataEntry.baseProperties;
+
+    this.rules = DataEntry.rules; // TODO: support extra rules
     extend(self, pick(options, baseProperties));
     self.options = options = extend({}, DataEntry.defaults, pick(options, baseProperties, 1));
     
@@ -107,7 +89,12 @@ class DataEntry extends EventsEmitter {
     self.validator = objOrInstance(options.validator, self);
   }
 
-  configure(options) {
+  /**
+   * Configures global default options for the DataEntry.
+   * 
+   * @param {object} options 
+   */
+  static configure(options) {
     each(options, (k, v) => {
       DataEntry.defaults[k] = v;
     });
@@ -137,7 +124,7 @@ class DataEntry extends EventsEmitter {
   validate(fields, options) {
     var self = this;
     if (fields && isFunction(fields)) fields = fields.call(self);
-    if (fields && !isArray(fields)) raise(9);// invalid parameter: fields must be an array of strings
+    if (fields && !isArray(fields)) raise(9); // invalid parameter: fields must be an array of strings
 
     var schema = self.schema;
     if (!schema) raise(11);
@@ -152,8 +139,8 @@ class DataEntry extends EventsEmitter {
       Promise.all(chain).then(function (a) {
         var data = flatten(a);
         var errors = where(data, function (o) { return o && o.error; });
-        if (errors[LEN]) {
-          //focus the first invalid field
+        if (len(errors)) {
+          //TODO: focus the first invalid field
           //errors[0].field.focus();
           //resolve with failure value
           resolve.call(self, {
@@ -182,10 +169,9 @@ class DataEntry extends EventsEmitter {
    * @param options
    * @returns {Promise}
    */
-  validateField (fieldName, options) {
+  validateField(fieldName, options) {
     // set options with default values
     options = extend({
-      //elements: null, // ???
       decorateField: true,
       onlyTouched: false
     }, options || {});
@@ -212,6 +198,8 @@ class DataEntry extends EventsEmitter {
       raise(13, fieldName);
     }
 
+    // TODO: IMPLEMENT HERE THE LOGIC THAT OBTAINS A FIELD (EVENTUALLY DOM ELEMENT) BY NAME
+
     // support for harvester returning multiple fields by the same name (like in standard HTML)
     var fields = this.harvester.getFields 
       ? this.harvester.getFields(fieldName)
@@ -233,7 +221,7 @@ class DataEntry extends EventsEmitter {
         p = validator.validate(validation, field, value).then(function (data) {
           // the validation process succeeded (didn't produce any exception)
           // but this doesn't mean that the field is valid:
-          for (var j = 0, q = data[LEN]; j < q; j++) {
+          for (var j = 0, q = len(data); j < q; j++) {
             var o = data[j];
             if (o.error) {
               //field invalid
@@ -244,6 +232,7 @@ class DataEntry extends EventsEmitter {
               return data;
             }
           }
+          
           // the field is valid; its value can be formatted;
           self.onGoodValidation(fieldSchema, field, fieldName, value);
 

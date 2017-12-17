@@ -9,6 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 import DataEntry from "../scripts/forms/dataentry"
+import { debug } from "util";
 
 
 // Following marker and harvester are used for testing purpose
@@ -61,6 +62,14 @@ class TestHarvester {
 }
 
 
+/**
+ * Returns a function that ensures a promise is not rejected; and completes the test.
+ * Validation process must not be rejected, because Promise should only be rejected in exceptional situations,
+ * following the specification.
+ * Ref. https://www.w3.org/2001/tag/doc/promises-guide#rejections-should-be-exceptional
+ * 
+ * @param {*} always 
+ */
 function noReject(always) {
   return function () {
     expect(0).toEqual(1, "Validation process must not be rejected")
@@ -69,7 +78,7 @@ function noReject(always) {
 }
 
 
-const NOT_NAME = "Matteo";
+const NOT_NAME = "Whatever";
 
 
 describe("DataEntry", () => {
@@ -106,9 +115,9 @@ describe("DataEntry", () => {
       marker: new TestMarker(data),
       harvester: new TestHarvester(data)
     })
-
+    
     a.validate().then(results => {
-      // validation must fail;
+      // validation must fail; because 'name' requires a value and data object has no value
       expect(results.valid).toEqual(false, "Validation must fail")
 
       // result must contain information about the error
@@ -183,12 +192,12 @@ describe("DataEntry", () => {
 
   it("must support validation rules with extra parameters", always => {
     var data = {
-      name: "Matteo"
+      name: "Fuffolo"
     };
 
     var a = new DataEntry({
       schema: {
-        name: [{ name: "not", params: ["Matteo"] }]
+        name: [{ name: "not", params: ["Fuffolo"] }]
       },
       marker: new TestMarker(data),
       harvester: new TestHarvester(data)
@@ -206,7 +215,7 @@ describe("DataEntry", () => {
       const onlyError = errors[0];
       expect(onlyError.field).toEqual("name")
       expect(onlyError.message).toEqual("cannotBe")
-      expect(onlyError.value).toEqual("Matteo")
+      expect(onlyError.value).toEqual("Fuffolo")
 
       always()
     }, noReject(always));
@@ -214,12 +223,12 @@ describe("DataEntry", () => {
 
   it("must support multiple validation rules for each field", always => {
     var data = {
-      name: "Matteo"
+      name: "Fuffolo"
     };
 
     var a = new DataEntry({
       schema: {
-        name: ["required", { name: "not", params: ["Matteo"] }]
+        name: ["required", { name: "not", params: ["Fuffolo"] }]
       },
       marker: new TestMarker(data),
       harvester: new TestHarvester(data)
@@ -237,7 +246,7 @@ describe("DataEntry", () => {
       const onlyError = errors[0];
       expect(onlyError.field).toEqual("name")
       expect(onlyError.message).toEqual("cannotBe")
-      expect(onlyError.value).toEqual("Matteo")
+      expect(onlyError.value).toEqual("Fuffolo")
 
       always()
     }, noReject(always));
@@ -399,5 +408,24 @@ describe("DataEntry", () => {
       
       always()
     }, noReject(always));
+  })
+
+  it("must be disposable", () => {
+    const data = {};
+    var a = new DataEntry({
+      schema: {
+        name: { 
+          validation: ["required"], 
+          format: ["trim"] 
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    a.dispose();
+
+    expect(a.marker).toBeFalsy();
+    expect(a.harvester).toBeFalsy();
   })
 })

@@ -1,6 +1,6 @@
 /**
- * DataEntry defaul validation rules.
- * https://github.com/RobertoPrevato/KingTable
+ * DataEntry base validation rules.
+ * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato
  * https://robertoprevato.github.io
@@ -60,20 +60,8 @@ const ValidationRules = {
   required: function (field, value, forced, params) {
     if (_.isString(params))
       params = { message: params };
-    var defaults = { message: "requiredValue" },
-      o = _.extend(defaults, params);
-    /*
-    // TODO: handle where appropriate
-    if (isRadioButton(field)) {
-      //any radio button within the same group must be selected
-      var group = find(this.element, nameSelector(field));
-      if (any(group, function (o) { return o.checked; }))
-        return true;
-      else
-        return getError(o.message, arguments);
-    }
-    */
-
+    var defaults = { message: "requiredValue" }, o = _.extend(defaults, params);
+    
     if (!value || !!value.toString().match(/^\s+$/))
       return getError(o.message, arguments);
     return true;

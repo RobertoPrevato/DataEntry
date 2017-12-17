@@ -1,5 +1,5 @@
 /**
- * DataEntry formatting rules.
+ * DataEntry built-in formatting rules.
  * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato

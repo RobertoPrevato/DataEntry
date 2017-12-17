@@ -17,6 +17,7 @@ describe("Formatter", () => {
   it("must format values by rule names", () => {
     const a = new Formatter();
 
+    // trim is one of the built-in formatters
     const formatted = a.format(["trim"], "name", "  Hello!  ");
 
     expect(formatted).toEqual("Hello!")

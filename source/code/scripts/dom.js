@@ -44,6 +44,11 @@ function attr(el, n) {
 function attrName(el) {
   return attr(el, "name");
 }
+function setAttr(el, o) {
+  for (let x in o) {
+    el.setAttribute(x, o[x]);
+  }
+}
 function nameSelector(el) {
   return  "[name='" + attrName(el) + "']";
 }
@@ -168,7 +173,6 @@ export default {
     this.off(a);
     var parent = a.parentElement || a.parentNode;
     if (parent) {
-      // in stupid IE, text nodes and comments don't have a parentElement
       parent.removeChild(a);
     }
   },
@@ -493,5 +497,11 @@ export default {
 
   getValue,
 
-  setValue
+  setValue,
+
+  setAttr,
+
+  nextWithClass,
+
+  nameSelector
 };

@@ -114,6 +114,11 @@ class Validator {
     return chain;
   }
 
+  /**
+   * Wraps a synchronous function into a promise, so it can be run asynchronously.
+   * 
+   * @param {function} f 
+   */
   makeRuleDeferred (f) {
     var validator = this;
     return wrap(f, function (func) {
