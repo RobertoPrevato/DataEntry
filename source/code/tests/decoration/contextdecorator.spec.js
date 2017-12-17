@@ -48,9 +48,7 @@ describe("ContextDecorator", () => {
     var text = "Hello World";
 
     // act
-    decorator.markFieldInfo("name", {
-      message: text
-    })
+    decorator.markFieldInfo("name", text)
 
     // assert
     var validationData = decorator.target.name;
@@ -58,7 +56,7 @@ describe("ContextDecorator", () => {
 
     expect(validationData).toEqual({
       valid: true,
-      info: { message: text }
+      info: text
     });
   })
 
@@ -79,8 +77,109 @@ describe("ContextDecorator", () => {
     // assert
     var validationData = decorator.target.name;
     expect(validationData).toBeDefined();
+    expect(validationData).toEqual({
+      valid: true
+    });
+  })
+
+  it("must mark invalid fields by altering objects (setter style)", () => {
+    var v;
+    const decorator = new ContextDecorator({
+      options: {
+        validationTarget: {
+          name: function (value) {
+            v = value;
+          }
+        }
+      }
+    });
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid("name", {
+      message: text
+    })
+
+    // assert
+    var validationData = v;
+    expect(validationData).toBeDefined();
 
     expect(validationData).toEqual({
+      valid: false,
+      error: { message: text }
+    });
+  })
+
+  it("must set field information by altering objects (setter style)", () => {
+    var v;
+    const decorator = new ContextDecorator({
+      options: {
+        validationTarget: {
+          name: function (value) {
+            v = value;
+          }
+        }
+      }
+    });
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInfo("name", text)
+
+    // assert
+    var validationData = v;
+    expect(validationData).toBeDefined();
+
+    expect(validationData).toEqual({
+      valid: true,
+      info: text
+    });
+  })
+
+  it("must clear field information for valid values (setter style)", () => {
+    var v;
+    const decorator = new ContextDecorator({
+      options: {
+        validationTarget: {
+          name: function (value) {
+            v = value;
+          }
+        }
+      }
+    });
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid("name", text)
+    decorator.markFieldNeutrum("name")
+
+    // assert
+    var validationData = v;
+    expect(validationData).toBeUndefined();
+  })
+  
+  it("must clear field information for valid values (setter style)", () => {
+    var v;
+    const decorator = new ContextDecorator({
+      options: {
+        validationTarget: {
+          name: function (value) {
+            v = value;
+          }
+        }
+      }
+    });
+    var text = "Hello World";
+
+    // act
+    decorator.markFieldInvalid("name", {
+      message: text
+    })
+    decorator.markFieldValid("name");
+    
+    // assert
+    expect(v).toBeDefined();
+    expect(v).toEqual({
       valid: true
     });
   })
