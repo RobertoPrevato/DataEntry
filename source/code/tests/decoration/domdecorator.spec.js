@@ -16,13 +16,18 @@ import $ from "../../scripts/dom"
 
 //#region useful functions
 
+const section = $.createElement("section");
+$.setAttr(section, {"class": "tests-section"})
+section.innerHTML = "<h2>DomDecorator tests</h2>"
+document.body.appendChild(section);
+
 function arrange() {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
     "class": "domdecorator-wrapper"
   });
-  document.body.appendChild(wrapper);
+  section.appendChild(wrapper);
   
   
   var input = $.createElement("input");
@@ -41,7 +46,7 @@ function arrangeRadios() {
     "id": _.uniqueId(),
     "class": "domdecorator-wrapper"
   });
-  document.body.appendChild(wrapper);
+  section.appendChild(wrapper);
   
   wrapper.innerHTML = `<label for="light-side">Favorite side of the force</label>
   <input type="radio" name="side" id="light-side" />
@@ -55,7 +60,7 @@ function arrangeWithTarget() {
     "id": _.uniqueId(),
     "class": "domdecorator-wrapper"
   });
-  document.body.appendChild(wrapper);
+  section.appendChild(wrapper);
   
   wrapper.innerHTML = `
   <input type="text" name="foo" id="with-target" data-validation-target="val-target" />

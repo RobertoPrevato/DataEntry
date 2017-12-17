@@ -50,7 +50,7 @@ function setAttr(el, o) {
   }
 }
 function nameSelector(el) {
-  return  "[name='" + attrName(el) + "']";
+  return "[name='" + (_.isString(el) ? el : attrName(el)) + "']";
 }
 function isPassword(o) {
   return isInput(o) && attr(o, "type") == "password";
@@ -75,10 +75,27 @@ function getValue(el) {
         return el.checked;
     }
   }
+  if (/select/i.test(el.tagName)) {
+    if (el.multiple) {
+      // return an array with all selected values
+      var v = [];
+      each(el.querySelectorAll("option"), o => {
+        if (o.selected)
+          v.push(o.value);
+      });
+      return v;
+    }
+  }
+  if (el.contentEditable == "true") {
+    return el.innerText; // innerText respects line breaks
+  }
   return el.value;
 }
 function isRadioButton(el) {
   return el && /^input$/i.test(el.tagName) && /^(radio)$/i.test(el.type);
+}
+function isCheckbox(el) {
+  return el && /^input$/i.test(el.tagName) && /^(checkbox)$/i.test(el.type);
 }
 function isSelectable(el) {
   return el && (/^select$/i.test(el.tagName) || isRadioButton(el));
@@ -493,6 +510,8 @@ export default {
   isSelectable,
 
   isRadioButton,
+
+  isCheckbox,
 
   isPassword,
 

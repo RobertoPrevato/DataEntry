@@ -1,5 +1,5 @@
 /**
- * Decorator class editing context object.
+ * Decorator class editing context objects.
  * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato

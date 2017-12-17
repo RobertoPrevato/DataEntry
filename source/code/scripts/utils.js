@@ -782,6 +782,14 @@ export default {
       }
       return i;
     }
-    return hasOwnProperty(o, "length") ? o.length : undefined;
+    return "length" in o ? o.length : undefined;
+  },
+
+  nil(v) {
+    return v === null || v === undefined;
+  },
+
+  nilOrEmpty(v) {
+    return v === null || v === undefined || v === "";
   }
 };

@@ -22,6 +22,11 @@ const FormattingRules = {
     return value ? value.replace(/\s{2,}/g, " ") : value;
   },
 
+  cleanSpaces: function (field, value) {
+    if (!value) return value;
+    return value.replace(/^[\s]+|[\s]+$/g, "").replace(/\s{2,}/g, " ");
+  },
+
   integer: function (field, value) {
     if (!value) return;
     //remove leading zeros
