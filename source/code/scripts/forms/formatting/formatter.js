@@ -13,7 +13,7 @@ import raise from "../../../scripts/raise"
 import { FormattingRules } from "./rules"
 
 
-const LEN = "length";
+const len = _len;
 const map = _.map;
 const toArray = _.toArray;
 const wrap = _.wrap;
@@ -73,7 +73,7 @@ class Formatter {
       
       raise(4, name);
     }
-    for (var i = 0, l = rules[LEN]; i < l; i++) {
+    for (var i = 0, l = len(rules); i < l; i++) {
       var a = normalizeRule(rules[i], 16);
       var ruleDefinition = self.rules[a.name];
 
