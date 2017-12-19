@@ -10,7 +10,7 @@
  */
 import _ from "../../../scripts/utils"
 import raise from "../../../scripts/raise"
-import { FormattingRules, FormattingPreRules } from "./rules"
+import { FormattingRules } from "./rules"
 
 
 const LEN = "length";
@@ -75,13 +75,18 @@ class Formatter {
     }
     for (var i = 0, l = rules[LEN]; i < l; i++) {
       var a = normalizeRule(rules[i], 16);
-      value = self.format(a.name, field, value, a.params);
+      var ruleDefinition = self.rules[a.name];
+
+      if (!ruleDefinition)
+        raise(4, name);
+
+      // call with the whole object used to configure the formatting
+      value = (ruleDefinition.fn || ruleDefinition).call(self, field, value, _.omit(a, "name"));
     }
     return value;
   }
 }
 
 Formatter.Rules = FormattingRules
-Formatter.PreRules = FormattingPreRules
 
 export default Formatter

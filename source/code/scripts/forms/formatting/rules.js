@@ -8,6 +8,8 @@
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
  */
+import _ from "../../utils"
+
 
 const FormattingRules = {
   trim: function (field, value) {
@@ -31,18 +33,34 @@ const FormattingRules = {
     if (!value) return;
     //remove leading zeros
     return value ? value.replace(/^0+/, "") : value;
+  },
+
+  "zero-fill": function (field, value, options) {
+    if (!value) return value;
+    var l;
+    if (_.isEmpty(options)) {
+      var ml = field.getAttribute("maxlength");
+      if (!ml) throw "maxlength is required for the zero-fill formatter";
+      l = parseInt(ml);
+    } else {
+      if (!("length" in options)) {
+        throw "missing length in options";
+      }
+      l = options.length;
+    }
+    var original = value;
+    while (value.length < l) {
+      value = "0" + value;
+    }
+    return value;
+  },
+
+  "zero-unfill": function (field, value) {
+    if (!value) return value;
+    if (/^0+/.test(value))
+      value = value.replace(/^0+/, "");
+    return value;
   }
 };
 
-
-// formatting rules to apply on focus, before editing a value
-const FormattingPreRules = {
-  integer: function (field, value) {
-    if (/^0+$/.test(value))
-      //if the value consists of only zeros, empty automatically the field (some users get confused when imputting numbers in a field with 0)
-      setValue(field, "");
-  }
-}
-
-
-export { FormattingRules, FormattingPreRules }
+export { FormattingRules }

@@ -53,14 +53,14 @@ class DomHarvester {
     return this.getValuesFromElement(this.element);
   }
 
-  setValue(name, value) {
-    throw "not implemented";
+  setValue(field, value) {
+    return $.setValue(field, value);
   }
 
   getValue(field) {
     if (!field) raise(12);
     if (_.isString(field))
-      return this.getValueFromElements(find(this.element, $.nameSelector(field)));
+      return this.getValueFromElements($.find(this.element, $.nameSelector(field)));
     return getValue(field);
   }
 

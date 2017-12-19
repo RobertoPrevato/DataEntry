@@ -88,11 +88,11 @@ class DataEntry extends EventsEmitter {
     }
 
     each([
-      "binder", 
       "marker", 
       "formatter", 
       "harvester", 
-      "validator"], name => {
+      "validator",
+      "binder"], name => {
       self[name] = objOrInstance(options[name], self);
     })
   }
@@ -185,7 +185,6 @@ class DataEntry extends EventsEmitter {
   validateField(fieldName, options) {
     // set options with default values
     options = extend({
-      decorateField: true,
       onlyTouched: false
     }, options || {});
     var self = this, schema = self.schema;
@@ -211,12 +210,11 @@ class DataEntry extends EventsEmitter {
       raise(13, fieldName);
     }
 
-    // TODO: IMPLEMENT HERE THE LOGIC THAT OBTAINS A FIELD (EVENTUALLY DOM ELEMENT) BY NAME
-
-    // support for harvester returning multiple fields by the same name (like in standard HTML)
-    var fields = this.harvester.getFields 
+    // support for harvester returning multiple fields by the same name
+    // the harvester can then return other kind of fields (such as HTML nodes)
+    var fields = options.fields || (this.harvester.getFields 
       ? this.harvester.getFields(fieldName)
-      : [fieldName];
+      : [fieldName]);
     var validator = self.validator,
       marker = self.marker,
       validation = self.getFieldValidationDefinition(fieldSchema.validation),
@@ -225,45 +223,40 @@ class DataEntry extends EventsEmitter {
     each(fields, function (field) {
       var value = self.harvester.getValue(field);
 
-      if (options.decorateField) {
-        //mark field neutrum before validation
-        marker.markFieldNeutrum(field);
-      }
-      var p;
-      if (options.decorateField) {
-        p = validator.validate(validation, field, value).then(function (data) {
-          // the validation process succeeded (didn't produce any exception)
-          // but this doesn't mean that the field is valid:
-          for (var j = 0, q = len(data); j < q; j++) {
-            var o = data[j];
-            if (o.error) {
-              //field invalid
-              marker.markFieldInvalid(field, {
-                message: o.message
-              });
-              //exit
-              return data;
-            }
+      //mark field neutrum before validation
+      marker.markFieldNeutrum(field);
+      
+      var p = validator.validate(validation, field, value).then(function (data) {
+        // the validation process succeeded (didn't produce any exception)
+        // but this doesn't mean that the field is valid:
+        for (var j = 0, q = len(data); j < q; j++) {
+          var o = data[j];
+          if (o.error) {
+            // field invalid
+            marker.markFieldInvalid(field, {
+              message: o.message
+            });
+            // exit
+            return data;
           }
-          
-          // the field is valid; its value can be formatted;
-          self.onGoodValidation(fieldSchema, field, fieldName, value);
+        }
+        
+        // the field is valid; its value can be formatted;
+        self.onGoodValidation(fieldSchema, field, fieldName, value);
 
-          marker.markFieldValid(field);
-          return data;
-        }, function (arr) {
-          //the validation process failed (it produced an exception)
-          //this should happen, for example, when a validation rule that involves an Ajax request receives status 500 from the server side.
-          var a = first(arr, function (o) {
-            return o.error;
-          });
-          marker.markFieldInvalid(field, {
-            message: a.message
-          });
+        marker.markFieldValid(field);
+        return data;
+      }, function (arr) {
+        // the validation process failed (it produced an exception)
+        // this should happen, for example, when a validation rule that involves an Ajax request receives status 500 from the server side.
+        var a = first(arr, function (o) {
+          return o.error;
         });
-      } else {
-        p = validator.validate(validation, field, value);
-      }
+        marker.markFieldInvalid(field, {
+          message: a.message
+        });
+      });
+
       chain.push(p);
     });
     // NB: the chain can contain more than one element, when a fieldset contains multiple elements with the same name
@@ -313,12 +306,12 @@ class DataEntry extends EventsEmitter {
   }
 
   /**
-   * Get the value for the property with the given name. Proxy function to harvester getValue function.
+   * Get the value of the given field. Proxy function to harvester getValue function.
    * 
-   * @param {string} name 
+   * @param {string} field 
    */
-  getFieldValue(name) {
-    return this.harvester.getValue(name);
+  getFieldValue(field) {
+    return this.harvester.getValue(field);
   }
 }
 

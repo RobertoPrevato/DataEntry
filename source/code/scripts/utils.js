@@ -481,6 +481,10 @@ export default {
     return a;
   },
 
+  omit(a, arr) {
+    return this.pick(a, arr, 1);
+  },
+
   /**
    * Requires an object to be defined and to have the given properties.
    *

@@ -382,7 +382,6 @@ export default {
   fire(el, eventName, data) {
     if (eventName == "focus") {
       el.focus();
-      return;
     }
     var event;
     if (window.CustomEvent) {

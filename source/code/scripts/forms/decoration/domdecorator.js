@@ -246,6 +246,7 @@ class DomDecorator {
    * @returns {DomMarker}
    */
   markFieldInfo(f, options) {
+    addClass(removeClass(f, "ug-field-invalid"), "ug-field-valid");
     return this.markField(f, options, "ug-info");
   }
 
@@ -257,6 +258,7 @@ class DomDecorator {
    * @returns {DomMarker}
    */
   markFieldInvalid(f, options) {
+    addClass(removeClass(f, "ug-field-valid"), "ug-field-invalid");
     return this.markField(f, options, "ug-error");
   }
 
