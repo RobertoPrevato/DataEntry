@@ -13,6 +13,11 @@ import DomHarvester from "../scripts/forms/harvesting/domharvester"
 import DomDecorator from "../scripts/forms/decoration/domdecorator"
 import _ from "../scripts/utils"
 import $ from "../scripts/dom"
+import { raiseSettings } from "../scripts/raise"
+import { noReject } from "./tests-utils"
+
+
+raiseSettings.writeToConsole = false; // for tests
 
 //#region useful functions
 
@@ -34,7 +39,6 @@ function arrange(innerHtml, comment) {
 
 //#endregion
 
-import { noReject } from "./tests-utils"
 
 describe("DataEntry with DOM classes", () => {
 
@@ -132,5 +136,46 @@ describe("DataEntry with DOM classes", () => {
       expect(data.errors.length).toEqual(6);
       always();
     }, noReject(always))
+  })
+
+  it("must throw exception if required parameters are missing", function () {
+    expect(function() {
+      new DataEntry({
+        marker: null,
+        harvester: null,
+        schema: {}
+      })
+    }).toThrow(new Error("missing options: marker, harvester. For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#8"));
+  })
+
+  it("must throw exception if decorator is missing", function () {
+    expect(function() {
+      new DataEntry({
+        marker: DomDecorator,
+        harvester: null,
+        schema: {}
+      })
+    }).toThrow(new Error("missing options: harvester. For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#8"));
+  })
+
+  it("must throw exception if harvester is missing", function () {
+    expect(function() {
+      new DataEntry({
+        marker: null,
+        harvester: DomHarvester,
+        schema: {}
+      })
+    }).toThrow(new Error("missing options: marker. For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#8"));
+  })
+
+  it("must throw exception if element is missing and we try to use DomHarvester", function () {
+    expect(function() {
+      new DataEntry({
+        element: null,
+        marker: DomDecorator,
+        harvester: DomHarvester,
+        schema: {}
+      })
+    }).toThrow(new Error("missing 'element' in dataentry. Specify an HTML element for the dataentry, in order to use the DomHarvester. For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#8"));
   })
 })

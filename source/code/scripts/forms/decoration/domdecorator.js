@@ -12,7 +12,7 @@
  */
 import _ from "../../../scripts/utils"
 import $ from "../../../scripts/dom"
-import raise from "../../../scripts/raise"
+import { raise } from "../../../scripts/raise"
 
 const each = _.each;
 const extend = _.extend;

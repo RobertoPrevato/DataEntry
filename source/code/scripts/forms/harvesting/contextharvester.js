@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 import _ from "../../../scripts/utils"
-import raise from "../../../scripts/raise"
+import { raise } from "../../../scripts/raise"
 
 
 function getFromObject(obj, name) {
@@ -17,7 +17,7 @@ function getFromObject(obj, name) {
     // getter style (e.g. Knockout)
     return obj[name]();
   }
-  // simply set
+  // simply get
   return obj[name];
 }
 

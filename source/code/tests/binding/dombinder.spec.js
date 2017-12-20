@@ -81,6 +81,41 @@ describe("DomBinder", () => {
     });
   })
 
+  it("must obtain constraints event definition by schema", () => {
+    var binder = new DomBinder({
+      schema: {
+        foo: ["digits"]
+      },
+      options: {
+        useImplicitConstraints: true
+      },
+      validator: { ev: "blur" },
+      element: true
+    });
+    var ev = binder.getConstraintsDefinition();
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({
+      "keypress [name='foo']": "constraint_foo"
+    });
+  })
+
+  it("must support disabling implicit constraints by configuration", () => {
+    var binder = new DomBinder({
+      schema: {
+        foo: ["digits"]
+      },
+      options: {
+        useImplicitConstraints: false
+      },
+      validator: { ev: "blur" },
+      element: true
+    });
+    var ev = binder.getConstraintsDefinition();
+
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({});
+  })
+
   it("must fire validation on blur", always => {
     var wrapper = arrange(`
     <input name="name" type="text" />
@@ -93,15 +128,7 @@ describe("DomBinder", () => {
       binder: DomBinder,
       schema: {
         name: ["required"]
-      },// TODO: remove rule
-      rules: [
-        {
-          name: "foo",
-          fn: function () {
-            return true;
-          }
-        }
-      ]
+      }
     })
     // activate validation:
     dataentry.validationActive = true;
@@ -310,5 +337,27 @@ describe("DomBinder", () => {
         always();
       }, 0);
     }, 0);
+  })
+
+  it("must fire constraint rules on keypress", always => {
+    var wrapper = arrange(`
+    <input name="foo" type="text" maxlength="3" />
+    `, "constraints on keypress (digits only)");
+
+    const dataentry = new DataEntry({
+      element: wrapper,
+      marker: DomDecorator,
+      harvester: DomHarvester,
+      binder: DomBinder,
+      schema: {
+        foo: {
+          validation: ["digits"]
+        }
+      }
+    })
+    // activate validation:
+    dataentry.validationActive = true;
+    // requires manual testing
+    always();
   })
 })

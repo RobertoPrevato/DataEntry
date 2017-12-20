@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 import _ from "../../scripts/utils"
-import raise from "../../scripts/raise"
+import { raise } from "../../scripts/raise"
 import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"

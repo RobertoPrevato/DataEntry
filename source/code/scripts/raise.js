@@ -11,14 +11,20 @@
  * http://www.opensource.org/licenses/MIT
  */
 
+const raiseSettings = {
+  writeToConsole: true
+};
+
 /**
  * Raises an exception, offering a link to the GitHub wiki.
  * https://github.com/RobertoPrevato/DataEntry/wiki/Errors
  */
-export default function raise(err, detail) {
+function raise(err, detail) {
   var message = (detail ? detail : "Error") + ". For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#" + err;
-  if (typeof console != "undefined") {
+  if (raiseSettings.writeToConsole && typeof console != "undefined") {
     console.error(message);
   }
   throw new Error(message);
 }
+
+export { raise, raiseSettings }

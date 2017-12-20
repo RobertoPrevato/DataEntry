@@ -21,14 +21,15 @@ $.setAttr(section, {"class": "tests-section"})
 section.innerHTML = "<h2>DomDecorator tests</h2>"
 document.body.appendChild(section);
 
-function arrange() {
+function arrange(comment) {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
     "class": "test-wrapper"
   });
   section.appendChild(wrapper);
-  
+  if (comment)
+    wrapper.innerHTML = "<h2 class='info'>" + comment + "</h2>";
   
   var input = $.createElement("input");
   $.setAttr(input, {
@@ -40,21 +41,21 @@ function arrange() {
   return [wrapper, input];
 }
 
-function arrangeRadios() {
+function arrangeRadios(comment) {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
     "class": "test-wrapper"
   });
   section.appendChild(wrapper);
-  
-  wrapper.innerHTML = `<label for="light-side">Favorite side of the force</label>
+
+  wrapper.innerHTML = (comment ? "<h2 class='info'>" + comment + "</h2>" : "") + `<label for="light-side">Favorite side of the force</label>
   <input type="radio" name="side" id="light-side" />
   <input type="radio" name="side" id="dark-side" />`;
   return wrapper;
 }
 
-function arrangeWithTarget() {
+function arrangeWithTarget(comment) {
   var wrapper = $.createElement("div")
   $.setAttr(wrapper, {
     "id": _.uniqueId(),
@@ -62,7 +63,7 @@ function arrangeWithTarget() {
   });
   section.appendChild(wrapper);
   
-  wrapper.innerHTML = `
+  wrapper.innerHTML = (comment ? "<h2 class='info'>" + comment + "</h2>" : "") + `
   <input type="text" name="foo" id="with-target" data-validation-target="val-target" />
   <br/>
   <span id="val-target">This is the target of validated element</span>`;
@@ -85,7 +86,7 @@ describe("DomDecorator", () => {
 
   it("must mark invalid elements by adding tooltip elements, by default", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("validation tooltip");
     var text = "Hello World";
 
     // act
@@ -104,7 +105,7 @@ describe("DomDecorator", () => {
 
   it("must support displaying information on elements by adding tooltip elements, by default", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("information tooltip");
     var text = "This is information";
 
     // act
@@ -123,7 +124,7 @@ describe("DomDecorator", () => {
 
   it("must support disposing, removing created elements", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("adding and clearing validation information");
 
     var decoratorToDispose = new DomDecorator();
 
@@ -148,7 +149,7 @@ describe("DomDecorator", () => {
 
   it("must support adding tooltips on the top", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("tooltip on top");
     var text = "Hello World";
 
     // act
@@ -168,7 +169,7 @@ describe("DomDecorator", () => {
 
   it("must support adding tooltips on the right", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("tooltip on the right");
     var text = "Hello World";
 
     // act
@@ -188,7 +189,7 @@ describe("DomDecorator", () => {
 
   it("must support adding tooltips on the bottom", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("tooltip on the bottom");
     var text = "Hello World";
 
     // act
@@ -208,7 +209,7 @@ describe("DomDecorator", () => {
 
   it("must support adding tooltips on the left", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("tooltip on the left");
     var text = "Hello World";
 
     // act
@@ -228,7 +229,7 @@ describe("DomDecorator", () => {
 
   it("must display messages on the label of radio buttons", () => {
     // arrange
-    var wrapper = arrangeRadios();
+    var wrapper = arrangeRadios("radio buttons");
     var text = "I find your lack of faith disturbing.";
 
     // act
@@ -243,7 +244,7 @@ describe("DomDecorator", () => {
 
   it("must let specify decoration targets", () => {
     // arrange
-    var wrapper = arrangeWithTarget();
+    var wrapper = arrangeWithTarget("specific target");
     var text = "Hello World";
 
     // act
@@ -258,7 +259,7 @@ describe("DomDecorator", () => {
 
   it("must clear validation information, when fields are in neutral state", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("neutral state must clear error info");
     var text = "Hello World";
 
     // act
@@ -274,7 +275,7 @@ describe("DomDecorator", () => {
 
   it("must clear validation information, when fields are in valid state", () => {
     // arrange
-    var [wrapper, input] = arrange();
+    var [wrapper, input] = arrange("valid state must clear error info");
     var text = "Hello World";
 
     // act

@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 import _ from "../../../scripts/utils"
-import raise from "../../../scripts/raise"
+import { raise } from "../../../scripts/raise"
 
 
 function setInObject(obj, name, value) {
@@ -35,9 +35,16 @@ class ContextDecorator {
       raise(17, "missing context for ContextDecorator (constructor parameter)")
     
     var options = dataentry.options || {};
-    var obj = options.validationTarget || dataentry.context;
-    if (!obj)
-      raise(17, "missing context for ContextDecorator")
+    var obj = options.validationTarget;
+    if (!obj) {
+      // default to a new object
+      obj = {};
+    }
+    delete options.validationTarget;
+    dataentry.validationTarget = obj;
+
+    if (obj === dataentry.context)
+      raise(21, "invalid context for ContextDecorator: cannot be the same as dataentry context")
 
     this.target = obj;
   }

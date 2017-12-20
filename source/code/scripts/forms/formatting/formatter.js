@@ -9,11 +9,11 @@
  * http://www.opensource.org/licenses/MIT
  */
 import _ from "../../../scripts/utils"
-import raise from "../../../scripts/raise"
+import { raise } from "../../../scripts/raise"
 import { FormattingRules } from "./rules"
 
 
-const len = _len;
+const len = _.len;
 const map = _.map;
 const toArray = _.toArray;
 const wrap = _.wrap;

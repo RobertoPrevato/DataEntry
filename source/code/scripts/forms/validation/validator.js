@@ -10,7 +10,7 @@
  */
 
 import _ from "../../../scripts/utils"
-import raise from "../../../scripts/raise"
+import { raise } from "../../../scripts/raise"
 import { ValidationRules, getError } from "./rules"
 
 

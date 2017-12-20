@@ -14,12 +14,14 @@
  */
 import _ from "../../utils"
 import $ from "../../dom"
-import raise from "../../raise"
+import { raise } from "../../raise"
+import { Constraints } from "../constraints/rules"
 
 const defer = _.defer;
 const attr = $.attr;
 const len = _.len;
 const extend = _.extend;
+const isString = _.isString;
 const isFunction = _.isFunction;
 const first = _.first;
 
@@ -77,8 +79,8 @@ class DomBinder {
     events = extend({}, events,
       self.getValidationDefinition(),
       self.getPreFormattingDefinition(),
-      self.getMetaEvents()/*,
-      self.getConstraintsDefinition()*/);
+      self.getMetaEvents(),
+      self.getConstraintsDefinition());
     return events;
   }
 
@@ -86,40 +88,45 @@ class DomBinder {
    * Gets an "events" object that describes on keypress constraints for all input inside the given element
    */
   getConstraintsDefinition() {
-    // TODO:
-    var self = this, schema = self.schema;
+    var self = this, 
+        dataentry = self.dataentry,
+        schema = dataentry.schema;
+
     if (!schema) return {};
+
     var o = {}, x;
     for (x in schema) {
-      var ev = self.string.format("{0} [name='{1}']", "keypress", x),
+      var ev = `keypress [name='${x}']`,
         functionName = "constraint_" + x,
-        ox = schema[x];
-      var constraint = ox.constraint;
+        ox = schema[x],
+        constraint = ox.constraint;
       if (constraint) {
-        //explicit constraint
-        if (isFunction(constraint)) constraint = constraint.call(self.context || self);
-        //constraint must be a single function name
+        // explicit constraint
+        if (isFunction(constraint)) constraint = constraint.call(dataentry.context || dataentry);
+
+        // constraint must be a single function name
         if (hasOwnProperty(Constraints, constraint)) {
-          //set reference in events object
+          // set reference in events object
           o[ev] = functionName;
-          //set function
+          // set function
           self.fn[functionName] = Constraints[constraint];
         } else {
           raise(5, constraint);
         }
-      } else if (self.options.allowImplicitConstraints) {
-        //set implicit constraints by validator names
-        //check validation schema
-        var validation = ox.validation;
+      } else if (dataentry.options.useImplicitConstraints) {
+        // set implicit constraints by validator names, if available
+        // check validation schema
+        var validation = ox.validation || ox;
         if (validation) {
-          //implicit constraint
+          // implicit constraint
           if (isFunction(validation)) validation = validation.call(self.context || self);
-          for (var i = 0, l = validation[LEN]; i < l; i++) {
+          for (var i = 0, l = len(validation); i < l; i++) {
+
             var name = isString(validation[i]) ? validation[i] : validation[i].name;
-            if (hasOwnProperty(Constraints, name)) {
-              //set reference in events object
+            if (_.has(Constraints, name)) {
+              // set reference in events object
               o[ev] = functionName;
-              //set function
+              // set function
               self.fn[functionName] = Constraints[name];
             }
           }
