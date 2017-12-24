@@ -116,6 +116,93 @@ describe("Validator", () => {
     });
   })
 
+  it("must support definition of new rules (asynchronous)", always => {
+    var k = 0;
+    Validator.Rules.wait = {
+      deferred: true,
+      fn: function (field, value, forced, promiseProvider) {
+        return new Promise(function (resolve, reject) {
+          k++;
+          setTimeout(() => {
+            resolve(true);
+          }, 5)
+        })
+      }
+    };
+
+    var v = new Validator()
+
+    v.validate(["wait"], "", "").then(function (results) {
+      const firstResult = results[0];
+      
+      expect(firstResult).toEqual(true);
+      expect(k).toEqual(1);
+      always()
+    }, function () {
+      expect(0).toEqual(1)
+      always()
+    });
+  })
+
+  it("must support definition of new rules (asynchronous, error)", always => {
+    var k = 0;
+    Validator.Rules.wait = {
+      deferred: true,
+      fn: function (field, value, forced, promiseProvider) {
+        return new Promise(function (resolve, reject) {
+          k++;
+          setTimeout(() => {
+            resolve({
+              error: true,
+              message: "Test"
+            });
+          }, 5)
+        })
+      }
+    };
+
+    var v = new Validator()
+
+    v.validate(["wait"], "", "").then(function (results) {
+      const firstError = results[0];
+
+      expect(firstError.error).toEqual(true);
+      expect(firstError.message).toEqual("Test");
+      always()
+    }, function () {
+      expect(0).toEqual(1)
+      always()
+    });
+  })
+
+  it("must support definition of new rules (asynchronous, rejected due to failure)", always => {
+    var k = 0;
+    Validator.Rules.wait = {
+      deferred: true,
+      fn: function (field, value, forced, promiseProvider) {
+        return new Promise(function (resolve, reject) {
+          k++;
+          setTimeout(() => {
+            reject("Internal server error or anything else");
+          }, 5)
+        })
+      }
+    };
+
+    var v = new Validator()
+
+    v.validate(["wait"], "", "").then(function (results) {
+      // we must not get here..
+      expect(0).toEqual(1)
+      always()
+    }).catch(function (results) {
+      const firstError = results[0];
+      expect(firstError.error).toEqual(true);
+      expect(firstError.message).toEqual("failedValidation");     
+      always()
+    });
+  })
+
   it("must support onError callbacks for fields", always => {
     var v = new Validator({
       options: {
