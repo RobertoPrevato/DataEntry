@@ -12,7 +12,10 @@ import _ from "../../utils"
 
 const len = _.len;
 const isPlainObject = _.isPlainObject;
+const isString = _.isString;
 const isNumber = _.isNumber;
+const isArray = _.isArray;
+const isEmpty = _.isEmpty;
 
 
 function getError(message, args) {
@@ -62,10 +65,10 @@ const ValidationRules = {
   },
 
   required: function (field, value, forced, params) {
-    if (_.isString(params))
+    if (isString(params))
       params = { message: params };
     
-    if (!value || !!value.toString().match(/^\s+$/))
+    if (!value || (isArray(value) && isEmpty(value)) || !!value.toString().match(/^\s+$/))
       return getError("required", arguments);
     return true;
   },

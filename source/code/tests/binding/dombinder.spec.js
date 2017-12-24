@@ -17,6 +17,7 @@ import DomHarvester from "../../scripts/forms/harvesting/domharvester"
 import DomDecorator from "../../scripts/forms/decoration/domdecorator"
 import _ from "../../scripts/utils"
 import $ from "../../scripts/dom"
+import { noReject } from "../tests-utils"
 
 //#region useful functions
 
@@ -270,7 +271,6 @@ describe("DomBinder", () => {
   })
 
   it("must activate dataentry validation after change event (group of checkboxes)", always => {
-    // TODO: handle following situation: by default, any checkbox should be sufficient
     var wrapper = arrange(`
     <div id="letters-wrapper">
       <label>A <input type="checkbox" name="letters" value="a" /></label><br />
@@ -359,5 +359,84 @@ describe("DomBinder", () => {
     dataentry.validationActive = true;
     // requires manual testing
     always();
+  })
+
+  it("must handle group of input elements", always => {
+    var wrapper = arrange(`
+    <form method="post" action="?" action="?" autocomplete="off">
+    <fieldset>
+      <legend>Basic example</legend>
+      <label>Username</label>
+      <input type="text" name="name" /><br />
+      <label>Year (between 1900 and 2015)</label>
+      <input type="text" name="year" />
+      <br />
+      <label>A field that is not required, but accepts only letters</label>
+      <input type="text" name="only-letters" /><br />
+      <label>Favored food</label>
+      <select name="favored-food">
+        <option></option>
+        <optgroup label="Salty">
+          <option value="pizza">Pizza</option>
+          <option value="noodles">Noodles</option>
+          <option value="asado">Asado</option>
+          <option value="sushi">Sushi</option>
+        </optgroup>
+        <optgroup label="Sweets">
+          <option value="cheese-cake">Cheese cake</option>
+          <option value="chocolate">Chocolate</option>
+          <option value="marmalade">Marmalade</option>
+        </optgroup>
+      </select><br />
+      <label>Light side of the force:</label>
+      <input type="radio" value="light" name="force-side" /><br />
+      <label>Dark side of the force:</label>
+      <input type="radio" value="dark" name="force-side" /><br />
+      <label class="inline">A checkbox that must be checked (policy acceptance)</label>
+      <input type="checkbox" name="policy-read" /><br />
+    </fieldset>
+  </form>
+  <button class="validation-trigger">Validate</button>
+    `, "group of elements with binder (2)");
+
+    const dataentry = new DataEntry({
+      element: wrapper,
+      marker: DomDecorator,
+      harvester: DomHarvester,
+      binder: DomBinder,
+      schema: {
+        name: {
+          validation: ["required"],
+          format: ["cleanSpaces"]
+        },
+        year: {
+          validation: ["required", { name: "integer", params: [{ min: 1900, max: 2015 }] }]
+        },
+        "only-letters": {
+          validation: ["letters"]
+        },
+        "policy-read": {
+          validation: ["mustCheck"]
+        },
+        "favored-food": {
+          validation: ["required"]
+        },
+        "force-side": {
+          validation: ["required"]
+        }
+      }
+    })
+
+    // to test manually the focusing of first invalid element:
+    $.on(wrapper, "click", ".validation-trigger", function () {
+      dataentry.validate();
+    })
+
+    dataentry.validate().then(function (data) {
+      expect(data.valid).toEqual(false);
+      expect(data.errors).toBeDefined();
+      expect(data.errors.length).toEqual(6);
+      always();
+    }, noReject(always))
   })
 })

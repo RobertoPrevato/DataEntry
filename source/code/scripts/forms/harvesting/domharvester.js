@@ -59,9 +59,15 @@ class DomHarvester {
 
   getValue(field) {
     if (!field) raise(12);
-    if (_.isString(field))
+    // handle groups of radio or checkboxes, too
+    if (_.isString(field) || isRadioButton(field) || this.isCheckboxInGroup(field))
       return this.getValueFromElements($.find(this.element, $.nameSelector(field)));
+
     return getValue(field);
+  }
+
+  isCheckboxInGroup(el) {
+    return isCheckbox(el) && len($.find(this.element, $.nameSelector(el))) > 1;
   }
 
   getKeys() {

@@ -16,6 +16,7 @@ import _ from "../../utils"
 import $ from "../../dom"
 import { raise } from "../../raise"
 import { Constraints } from "../constraints/rules"
+import EventsEmitter from "../../components/events"
 
 const defer = _.defer;
 const attr = $.attr;
@@ -26,25 +27,39 @@ const isFunction = _.isFunction;
 const first = _.first;
 
 
-class DomBinder {
+class DomBinder extends EventsEmitter {
 
   constructor(dataentry) {
-    this.dataentry = dataentry;
-    this.element = dataentry.element;
+    super()
+    const self = this;
+
+    self.dataentry = dataentry;
+    self.element = dataentry.element;
     if (!dataentry.element)
       raise(20, "missing `element` in dataentry");
-    this.fn = {};
-    if (this.element !== true)
-      this.bind();
+    self.fn = {};
+    if (self.element !== true)
+    self.bind();
+    
+    // does the dataentry implement the event interface?
+    if (_.quacks(dataentry, ["on", "trigger"])) {
+      self.listenTo(dataentry, "first:error", error => {
+        // focus the first invalid field
+        $.fire(error.field, "focus");
+      });
+    }
   }
 
   dispose() {
-    this.unbind();
+    self.unbind();
 
     // delete handlers
     for (var x in this.fn) {
       delete this.fn[x];
     }
+
+    if (_.quacks(this.dataentry, ["on", "trigger"]))
+      this.stopListening(this.dataentry);
     this.dataentry = null;
     this.element = null;
   }

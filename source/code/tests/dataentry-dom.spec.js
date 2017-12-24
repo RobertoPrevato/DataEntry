@@ -101,6 +101,7 @@ describe("DataEntry with DOM classes", () => {
       <input type="checkbox" name="policy-read" /><br />
     </fieldset>
   </form>
+  <button class="validation-trigger">Validate</button>
     `, "group of elements (1)");
 
     const dataentry = new DataEntry({
@@ -129,7 +130,7 @@ describe("DataEntry with DOM classes", () => {
         }
       }
     })
-    
+
     dataentry.validate().then(function (data) {
       expect(data.valid).toEqual(false);
       expect(data.errors).toBeDefined();

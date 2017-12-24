@@ -165,8 +165,9 @@ class DataEntry extends EventsEmitter {
         var data = flatten(a);
         var errors = where(data, function (o) { return o && o.error; });
         if (len(errors)) {
-          //TODO: focus the first invalid field
-          //errors[0].field.focus();
+          self.trigger("first:error", errors[0]);
+          self.trigger("errors", errors);
+
           //resolve with failure value
           resolve.call(self, {
             valid: false,
