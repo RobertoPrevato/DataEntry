@@ -248,7 +248,7 @@ class DomBinder {
         // the validation process failed (it produced an exception)
         // this should happen, for example, when a validation rule that involves an Ajax request receives status 500 from the server side.
         if (!data) return;
-        for (var i = 0, l = data[LEN]; i < l; i++) {
+        for (var i = 0, l = len(data); i < l; i++) {
           if (!data[i] || data[i].error) {
             // mark field invalid on the first validation dataentry failed
             marker.markFieldInvalid(f, {

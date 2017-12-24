@@ -14,7 +14,7 @@ import { raise } from "../../../scripts/raise"
 import { ValidationRules, getError } from "./rules"
 
 
-const LEN = "length";
+const len = _.len;
 const map = _.map;
 const toArray = _.toArray;
 const wrap = _.wrap;
@@ -25,6 +25,15 @@ const isPlainObject = _.isPlainObject;
 const extend = _.extend;
 
 
+function ruleParams(args, currentFieldRule) {
+  if (!currentFieldRule.params) {
+    var extraParams = _.omit(currentFieldRule, ["fn", "name"]);
+    return args.concat([extraParams]);
+  }
+  return args.concat(currentFieldRule.params);
+}
+
+
 class Validator {
 
   /**
@@ -33,10 +42,21 @@ class Validator {
    * @param dataentry: instance of DataEntry.
    */
   constructor(dataentry) {
-    var rules = Validator.Rules, self = this;
+    var rules = _.clone(Validator.Rules), 
+      self = this,
+      options = dataentry ? dataentry.options : null;
+    if (options && options.rules) {
+      extend(rules, options.rules);
+    }
+    self.getError = getError;
     self.rules = rules
-    self.dataentry = dataentry;
+    self.dataentry = dataentry || {};
     return self;
+  }
+
+  dispose() {
+    delete this.rules;
+    delete this.dataentry;
   }
 
   /**
@@ -63,7 +83,7 @@ class Validator {
 
   getRule(o) {
     var self = this,
-      defaults = {}, // Validator.defaults, ??
+      defaults = {},
       rules = self.rules;
     
     if (isString(o)) {
@@ -119,16 +139,22 @@ class Validator {
    * 
    * @param {function} f 
    */
-  makeRuleDeferred (f) {
+  makeRuleDeferred(f) {
     var validator = this;
     return wrap(f, function (func) {
       var args = toArray(arguments);
       return new Promise(function (resolve, reject) {
-        var result = func.apply(validator.dataentry, args.slice(1, args[LEN]));
+        var result = func.apply(validator.dataentry, args.slice(1, len(args)));
         //NB: using Native Promise, we don't want to treat a common scenario like an invalid field as a rejection
         resolve(result);
       });
     });
+  }
+
+  localizeError(error, parameters) {
+    var dataentry = this.dataentry,
+      localizer = dataentry ? dataentry.localizer : null;
+    return localizer && localizer.lookup(error) ? localizer.t(error, parameters) : error;
   }
 
   /**
@@ -139,10 +165,10 @@ class Validator {
    * @returns {Promise}
    */
   chain(queue) {
-    if (!queue[LEN])
+    if (!len(queue))
       return new Promise(function (resolve) { resolve([]); });
     
-    //normalize queue
+    // normalize queue
     queue = map(queue, function (o) {
       if (isFunction(o)) {
         return { fn: o, params: [] };
@@ -150,37 +176,53 @@ class Validator {
       return o;
     });
     var i = 0,
+      currentFieldRule = queue[i],
       a = [],
       validator = this,
-      args = toArray(arguments).slice(1, arguments[LEN]);
+      args = toArray(arguments).slice(1, len(arguments)),
+      fullArgs = ruleParams(args, currentFieldRule);
     
     return new Promise(function (resolve, reject) {
       function success(data) {
+        // support specific error messages for validation rule definition in schema
+        if (data.error) {
+          var ruleMessage = currentFieldRule.message;
+          if (ruleMessage)
+            data.message = isFunction(ruleMessage) ? ruleMessage.apply(validator.dataentry, args) : ruleMessage;
+          else
+            data.message = validator.localizeError(data.message, ruleParams([], currentFieldRule));
+
+          if (currentFieldRule.onError)
+            currentFieldRule.onError.apply(validator.dataentry, args);
+        }
+
         a.push(data);
         if (data.error) {
-          //common validation error: resolve the chain
+          // common validation error: resolve the chain
           return resolve(a);
         }
-        next();//go to next promise
+        next(); // go to next promise
       }
       function failure(data) {
-        //NB: this callback will be called if an exception happen during validation.
+        // NB: this callback will be called if an exception happen during validation.
         a.push({
           error: true,
-          message: localizeError("failedValidation")
+          message: validator.localizeError("failedValidation", ruleParams([], currentFieldRule))
         });
-        reject(a);//reject the validation chain
+        reject(a);// reject the validation chain
       }
       function next() {
         i++;
-        if (i == queue[LEN]) {
-          //every single promise completed properly
+        if (i == len(queue)) {
+          // every single promise completed properly
           resolve(a);
         } else {
-          queue[i].fn.apply(validator.dataentry, args.concat(queue[i].params)).then(success, failure);
+          currentFieldRule = queue[i];
+          fullArgs = ruleParams(args, currentFieldRule);
+          currentFieldRule.fn.apply(validator.dataentry, fullArgs).then(success, failure);
         }
       }
-      queue[i].fn.apply(validator.dataentry, args.concat(queue[i].params)).then(success, failure);
+      currentFieldRule.fn.apply(validator.dataentry, fullArgs).then(success, failure);
     });
   }
 }

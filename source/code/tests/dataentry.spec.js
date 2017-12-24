@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 import DataEntry from "../scripts/forms/dataentry"
-
+import { noReject } from "./tests-utils"
 
 // Following marker and harvester are used for testing purpose
 // they also demonstrate the abstraction of DataEntry, Validator and Formatter classes from DOM Manipulation
@@ -60,10 +60,6 @@ class TestHarvester {
   }
 }
 
-import { noReject } from "./tests-utils"
-
-
-
 const NOT_NAME = "Whatever";
 
 
@@ -113,7 +109,7 @@ describe("DataEntry", () => {
 
       const onlyError = errors[0];
       expect(onlyError.field).toEqual("name")
-      expect(onlyError.message).toEqual("requiredValue")
+      expect(onlyError.message).toEqual("required")
 
       always()
     }, noReject(always));
@@ -137,7 +133,7 @@ describe("DataEntry", () => {
     a.validate().then(results => {
       // validation must fail;
       expect(results.valid).toEqual(false, "Validation must fail")
-      expect(data["_(deco)_name"]).toEqual("invalid: requiredValue");
+      expect(data["_(deco)_name"]).toEqual("invalid: required");
       expect(data["_(deco)_key"]).toEqual("valid");
 
       always()
@@ -170,7 +166,7 @@ describe("DataEntry", () => {
 
       const onlyError = errors[0];
       expect(onlyError.field).toEqual("name")
-      expect(onlyError.message).toEqual("requiredValue")
+      expect(onlyError.message).toEqual("required")
 
       always()
     }, noReject(always));
@@ -426,7 +422,7 @@ describe("DataEntry", () => {
     a.validate().then(results => {
       // validation must fail; a fav-sith is required
       expect(results.valid).toEqual(false, "Validation must fail")
-      expect(data["_(deco)_fav-sith"]).toEqual("invalid: requiredValue");
+      expect(data["_(deco)_fav-sith"]).toEqual("invalid: required");
       expect(data["_(deco)_fav-jedi"]).toEqual("valid");
       expect(data["_(deco)_side"]).toEqual("valid");
 
@@ -437,7 +433,7 @@ describe("DataEntry", () => {
         // validation must fail; a fav-sith is required
         expect(results.valid).toEqual(false, "Validation must fail")
         expect(data["_(deco)_fav-sith"]).toEqual("valid");
-        expect(data["_(deco)_fav-jedi"]).toEqual("invalid: requiredValue");
+        expect(data["_(deco)_fav-jedi"]).toEqual("invalid: required");
         expect(data["_(deco)_side"]).toEqual("valid");
   
         always()
@@ -506,4 +502,74 @@ describe("DataEntry", () => {
     expect(a.marker).toBeFalsy();
     expect(a.harvester).toBeFalsy();
   })
+
+  it("must support a localizer object", always => {
+    var data = {
+      name: null
+    };
+    const exampleText = "Il campo richiede un valore";
+    
+    var a = new DataEntry({
+      schema: {
+        name: ["required"]
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data),
+      localizer: {
+        reg: {
+          "required": exampleText
+        },
+        t: function (key) {
+          return this.reg[key];
+        },
+        lookup: function (key) {
+          return !!this.reg[key];
+        }
+      }
+    })
+
+    a.validate().then(results => {
+      // validation must fail;
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_name"]).toEqual("invalid: " + exampleText);
+
+      always()
+    }, noReject(always));
+  });
+  
+  it("must support sending parameters to the localizer object", always => {
+    var data = {
+      foo: "A"
+    };  
+    var a = new DataEntry({
+      schema: {
+        foo: [{
+          name: "minLength",
+          length: 5
+          //params: [5]
+        }]
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data),
+      localizer: {
+        reg: {
+          "minLength": "The value must be at least of {{min}} characters."
+        },
+        t: function (key, params) {
+          return this.reg[key].replace("{{min}}", params[0].length);
+        },
+        lookup: function (key) {
+          return !!this.reg[key];
+        }
+      }
+    })
+
+    a.validate().then(results => {
+      // validation must fail;
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_foo"]).toEqual("invalid: " + "The value must be at least of 5 characters.");
+
+      always()
+    }, noReject(always));
+  });
 })

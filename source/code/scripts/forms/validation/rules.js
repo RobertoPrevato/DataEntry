@@ -10,6 +10,10 @@
  */
 import _ from "../../utils"
 
+const len = _.len;
+const isPlainObject = _.isPlainObject;
+const isNumber = _.isNumber;
+
 
 function getError(message, args) {
   return {
@@ -60,10 +64,9 @@ const ValidationRules = {
   required: function (field, value, forced, params) {
     if (_.isString(params))
       params = { message: params };
-    var defaults = { message: "requiredValue" }, o = _.extend(defaults, params);
     
     if (!value || !!value.toString().match(/^\s+$/))
-      return getError(o.message, arguments);
+      return getError("required", arguments);
     return true;
   },
 
@@ -97,15 +100,29 @@ const ValidationRules = {
 
   maxLength: function (field, value, forced, limit) {
     if (!value) return true;
-    if (value[LEN] > limit)
-      return getError("maxLength:" + limit, arguments);
+
+    if (isPlainObject(limit)) {
+      limit = limit.length;
+    }
+    if (!isNumber(limit))
+      throw "maxLength rule requires a numeric limit (use length option, or params: [num]";
+
+    if (len(value) > limit)
+      return getError("maxLength", arguments);
     return true;
   },
 
   minLength: function (field, value, forced, limit) {
-    if (!value) return true;
-    if (value[LEN] < limit)
-      return getError("minLength:" + limit, arguments);
+    if (!value) return false;
+
+    if (isPlainObject(limit)) {
+      limit = limit.length;
+    }
+    if (!isNumber(limit))
+      throw "minLength rule requires a numeric limit (use length option, or params: [num]";
+    
+    if (len(value) < limit)
+      return getError("minLength", arguments);
     return true;
   },
 

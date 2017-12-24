@@ -21,6 +21,7 @@ const each = _.each;
 const isString = _.isString;
 const isFunction = _.isFunction;
 const isPlainObject = _.isPlainObject;
+const extend = _.extend;
 
 
 function normalizeRule(a, error) {
@@ -42,8 +43,13 @@ class Formatter {
    *
    * @param dataentry: instance of DataEntry.
    */
-  constructor() {
-    var rules = Formatter.Rules, self = this;
+  constructor(dataentry) {
+    var rules = _.clone(Formatter.Rules), 
+      self = this,
+      options = dataentry ? dataentry.options : null;
+    if (options && options.formatRules) {
+      extend(rules, options.formatRules);
+    }
     self.rules = rules
     return self;
   }
@@ -52,8 +58,8 @@ class Formatter {
    * Disposes of this formatter.
    */
   dispose() {
-    this.rules = null;
-    return this;
+    delete this.rules;
+    delete this.dataentry;
   }
 
   /**

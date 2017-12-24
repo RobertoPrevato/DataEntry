@@ -1,4 +1,4 @@
-const WWWROOT = "../httpdocs/";
+const WWWROOT = "../dist/";
 const JS_DEST = WWWROOT + "scripts/";
 const CSS_DEST = WWWROOT + "styles/";
 const IMG_DEST = WWWROOT + "images/";
@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
 const VERSION = "2.0.0"
 const LICENSE = `
 /**
- * DataEntry ${VERSION}
+ * DataEntry ${VERSION}#COMMENT#
  * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright ${year}, Roberto Prevato
@@ -47,20 +47,23 @@ module.exports = {
 
   esToJs: [
     {
-      entry: "./code/scripts/forms/dataentry.js",
+      entry: "./code/dataentry.js",
       destfolder: JS_DEST,
-      filename: "dataentry"
-    }/*,
-    {
-      entry: "./code/tests/dataentry.spec.js",
-      destfolder: JS_DEST,
-      filename: "tests"
+      filename: "dataentry",
+      comment: ""
     },
     {
-      entry: "./code/scripts/main_tests.js",
+      entry: "./code/dataentry-dom.js",
       destfolder: JS_DEST,
-      filename: "tests"
-    },*/
+      filename: "dataentry-dom",
+      comment: "DOM classes"
+    },
+    {
+      entry: "./code/dataentry-context.js",
+      destfolder: JS_DEST,
+      filename: "dataentry-context",
+      comment: "Context classes"
+    }
   ],
 
   toBeCopied: [

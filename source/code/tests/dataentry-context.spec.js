@@ -71,7 +71,7 @@ describe("DataEntry with context classes", () => {
       expect(data.values).toBeUndefined();
       
       expect(validationTarget).toEqual({
-        name: { valid: false, error: {message: "requiredValue"} }
+        name: { valid: false, error: {message: "required"} }
       })
 
       always();

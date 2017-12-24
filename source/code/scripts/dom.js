@@ -12,16 +12,17 @@ const OBJECT = "object",
   STRING = "string",
   NUMBER = "number",
   FUNCTION = "function",
-  LEN = "length",
   REP = "replace";
 import _ from "../scripts/utils.js";
+
+const len = _.len;
 const any = _.any;
 const each = _.each;
 
 function modClass(el, n, add) {
   if (n.search(/\s/) > -1) {
     n = n.split(/\s/g);
-    for (var i = 0, l = n[LEN]; i < l; i ++) {
+    for (var i = 0, l = len(n); i < l; i ++) {
       modClass(el, n[i], add);
     }
   } else if (typeof n == STRING) {
@@ -66,6 +67,9 @@ function setValue(el, v) {
     el.dispatchEvent(new Event("change"), { forced: true });
   }
 }
+function isContentEditable(el) {
+  return el && el.contentEditable == "true";
+}
 function getValue(el) {
   var isInput = /input/i.test(el.tagName);
   if (isInput) {
@@ -86,7 +90,7 @@ function getValue(el) {
       return v;
     }
   }
-  if (el.contentEditable == "true") {
+  if (isContentEditable(el)) {
     return el.innerText; // innerText respects line breaks
   }
   return el.value;
@@ -150,8 +154,7 @@ function isElement(o) {
   );
 }
 function isAnyInput(o) {
-  // TODO: add support for divs transformed into rich input
-  return o && isElement(o) && /input|button|textarea|select/i.test(o.tagName);
+  return o && isElement(o) && (/input|button|textarea|select/i.test(o.tagName) || isContentEditable(o));
 }
 function isInput(o) {
   return o && isElement(o) && /input/i.test(o.tagName);

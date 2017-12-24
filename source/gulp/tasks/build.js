@@ -19,7 +19,7 @@ gulp.task("js-build", () => {
     var filename = o.filename + ".js";
     browserify(o.entry, { debug: true })
       .transform(babelify, { 
-        sourceMaps: true 
+        sourceMaps: true
       })
       .bundle()
       .on(_error_, err => console.log(err))
@@ -33,14 +33,14 @@ gulp.task("dist", () => {
     var filename = o.filename + ".js";
     browserify(o.entry, { debug: false })
       .transform(babelify, { 
-        sourceMaps: false 
+        sourceMaps: false
       })
       .bundle()
       .on(_error_, err => console.log(err))
       .pipe(source(filename))
       .pipe(buffer())
       .pipe(uglify())
-      .pipe(header(config.license, {
+      .pipe(header(config.license.replace("#COMMENT#", o.comment ? ` - ${o.comment}` : ""), {
           version: config.version,
           build: (new Date()).toUTCString()
       }))

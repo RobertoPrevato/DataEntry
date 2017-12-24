@@ -42,5 +42,5 @@ node_modules
 *.sh.swo
 *.sh.swp
 
-servers/flask/env/*
-httpdocs/*
+node_modules
+dist/**

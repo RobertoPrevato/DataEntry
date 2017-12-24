@@ -14,19 +14,19 @@ import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"
 
-const VERSION = "2.0.0"
-
+const VERSION = "2.0.1"
 
 const DEFAULTS = {
-  // Whether to enable implicit constraints by match with validator names
-  useImplicitConstraints: true,
+  
+  useImplicitConstraints: true, // whether to enable implicit constraints by match with validator names
 
-  // Whether to enable implicit formatting by match with validator names
-  useImplicitFormat: true,
+  useImplicitFormat: true, // whether to enable implicit formatting by match with validator names
 
   formatter: Formatter,
 
   validator: Validator,
+
+  localizer: null, // used to localize error messages
 
   binder: null
 }
@@ -43,6 +43,8 @@ const where = _.where;
 const pick = _.pick;
 const contains = _.contains;
 const flatten = _.flatten;
+const first = _.first;
+
 
 function objOrInstance(v, dataentry) {
   if (!v) 
@@ -52,6 +54,13 @@ function objOrInstance(v, dataentry) {
     return new v(dataentry);
   }
   return v;
+}
+
+
+function validateLocalizer(obj) {
+  if (!_.quacks(obj, ["t", "lookup"])) {
+    raise(22, "invalid `localizer` option: it must implement 't' and 'lookup' methods.")
+  }
 }
 
 
@@ -69,16 +78,14 @@ class DataEntry extends EventsEmitter {
    */
   constructor(options) {
     super();
-    
     if (!options) raise(8, "missing options"); // missing options
     if (!options.schema) raise(8, "missing schema"); // missing schema
 
     var self = this, baseProperties = DataEntry.baseProperties;
 
-    this.rules = DataEntry.rules; // TODO: support extra rules
     extend(self, pick(options, baseProperties));
     self.options = options = extend({}, DataEntry.defaults, pick(options, baseProperties, 1));
-    
+
     var missingTypes = [];
     each(["marker", "formatter", "harvester"], name => {
       if (!options[name]) missingTypes.push(name);
@@ -86,6 +93,11 @@ class DataEntry extends EventsEmitter {
     if (missingTypes.length) {
       raise(8, "missing options: " + missingTypes.join(", "))
     }
+
+    const localizer = options.localizer;
+    if (localizer)
+      validateLocalizer(localizer);
+    self.localizer = localizer;
 
     each([
       "marker", 
@@ -319,9 +331,5 @@ DataEntry.Validator = Validator;
 DataEntry.Formatter = Formatter;
 DataEntry.defaults = DEFAULTS;
 DataEntry.baseProperties = ["element", "schema", "context"];
-
-if (typeof window != "undefined") {
-  window.DataEntry = DataEntry;
-}
 
 export default DataEntry

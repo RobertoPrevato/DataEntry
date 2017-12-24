@@ -4,7 +4,6 @@ Following instructions are useful to set up a development environment.
 
 | Folder           | Description                                                                                                                                            |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| httpdocs         | output folder for processed client side code - static folder served by web applications (its content should be ignored by .gitignore files!)           |
 | source           | contains client side source code and development code                                                                                                  |
 | source/code      | contains the actual client side source code (including source static files) and tests                                                                  |
 | source/gulp      | contains tasks defined for gulp task runner                                                                                                            |

@@ -13,7 +13,6 @@ const OBJECT = "object",
   STRING = "string",
   NUMBER = "number",
   FUNCTION = "function",
-  LEN = "length",
   REP = "replace";
 
 import {
@@ -21,8 +20,28 @@ import {
   ArgumentNullException
 } from "../scripts/exceptions"
 
+/**
+* Returns the lenght of the given variable.
+* Handles array, object keys, string and any other object with length property.
+* 
+* @param {*} o 
+*/
+function len(o) {
+  if (!o) return 0;
+  if (isString(o))
+    return o.length;
+  if (isPlainObject(o)) {
+    var i = 0;
+    for (let x in o) {
+      i++;
+    }
+    return i;
+  }
+  return "length" in o ? o.length : undefined;
+}
+
 function map(a, fn) {
-  if (!a || !a[LEN]) {
+  if (!a || !len(a)) {
     if (isPlainObject(a)) {
       var x, b = [];
       for (x in a) {
@@ -32,7 +51,7 @@ function map(a, fn) {
     }
   };
   var b = [];
-  for (var i = 0, l = a[LEN]; i < l; i++)
+  for (var i = 0, l = len(a); i < l; i++)
     b.push(fn(a[i]));
   return b;
 }
@@ -43,8 +62,8 @@ function each(a, fn) {
       fn(a[x], x);
     return a;
   }
-  if (!a || !a[LEN]) return a;
-  for (var i = 0, l = a[LEN]; i < l; i++)
+  if (!a || !len(a)) return a;
+  for (var i = 0, l = len(a); i < l; i++)
     fn(a[i], i);
 }
 
@@ -128,14 +147,14 @@ function first(a, fn) {
   if (!fn) {
     return a ? a[0] : undefined;
   }
-  for (var i = 0, l = a[LEN]; i < l; i++) {
+  for (var i = 0, l = len(a); i < l; i++) {
     if (fn(a[i])) return a[i];
   }
 }
 
 function toArray(a) {
   if (isArray(a)) return a;
-  if (typeof a == OBJECT && a[LEN])
+  if (typeof a == OBJECT && len(a))
     return map(a, function (o) { return o; });
   return Array.prototype.slice.call(arguments);
 }
@@ -190,13 +209,59 @@ function isUnd(x) {
   return typeof x === "undefined";
 }
 
+/**
+ * Deep clones an item (except function types).
+ */
+function clone(o) {
+  var x, a;
+  if (o === null) return null;
+  if (o === undefined) return undefined;
+  if (isObject(o)) {
+    if (isArray(o)) {
+      a = [];
+      for (var i = 0, l = o.length; i < l; i++) {
+        a[i] = clone(o[i]);
+      }
+    } else {
+      a = {};
+      var v;
+      for (x in o) {
+        v = o[x];
+        if (v === null || v === undefined) {
+          a[x] = v;
+          continue;
+        }
+        if (isObject(v)) {
+          if (isDate(v)) {
+            a[x] = new Date(v.getTime());
+          } else if (isRegExp(v)) {
+            a[x] = new RegExp(v.source, v.flags);
+          } else if (isArray(v)) {
+            a[x] = [];
+            for (var i = 0, l = v.length; i < l; i++) {
+              a[x][i] = clone(v[i]);
+            }
+          } else {
+            a[x] = clone(v);
+          }
+        } else {
+          a[x] = v;
+        }
+      }
+    }
+  } else {
+    a = o;
+  }
+  return a;
+}
+
 export default {
   extend() {
     var args = arguments;
-    if (!args[LEN]) return;
-    if (args[LEN] == 1) return args[0];
+    if (!len(args)) return;
+    if (len(args) == 1) return args[0];
     var a = args[0], b, x;
-    for (var i = 1, l = args[LEN]; i < l; i++) {
+    for (var i = 1, l = len(args); i < l; i++) {
       b = args[i];
       if (!b) continue;
       for (x in b) {
@@ -284,9 +349,9 @@ export default {
    */
   sum(a, fn) {
     if (!a) return;
-    var b, l = a[LEN];
+    var b, l = len(a);
     if (!l) return;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       var v = fn ? fn(a[i]) : a[i];
       if (isUnd(b)) {
         b = v;
@@ -302,7 +367,7 @@ export default {
    */
   max(a, fn) {
     var o = -Infinity;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       var v = fn ? fn(a[i]) : a[i];
       if (v > o)
         o = v;
@@ -315,7 +380,7 @@ export default {
    */
   min(a, fn) {
     var o = Infinity;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       var v = fn ? fn(a[i]) : a[i];
       if (v < o)
         o = v;
@@ -328,7 +393,7 @@ export default {
    */
   withMax(a, fn) {
     var o;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (!o) {
         o = a[i];
         continue;
@@ -345,7 +410,7 @@ export default {
    */
   withMin(a, fn) {
     var o;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (!o) {
         o = a[i];
         continue;
@@ -381,7 +446,7 @@ export default {
       }
       return false;
     }
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (fn(a[i]))
         return true;
     }
@@ -404,7 +469,7 @@ export default {
       }
       return true;
     }
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (!fn(a[i]))
         return false;
     }
@@ -417,8 +482,8 @@ export default {
   find(a, fn) {
     if (!a) return null;
     if (isArray(a)) {
-      if (!a || !a[LEN]) return;
-      for (var i = 0, l = a[LEN]; i < l; i++) {
+      if (!a || !len(a)) return;
+      for (var i = 0, l = len(a); i < l; i++) {
         if (fn(a[i]))
           return a[i];
       }
@@ -434,9 +499,9 @@ export default {
   },
 
   where(a, fn) {
-    if (!a || !a[LEN]) return [];
+    if (!a || !len(a)) return [];
     var b = [];
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (fn(a[i]))
         b.push(a[i]);
     }
@@ -445,7 +510,7 @@ export default {
 
   removeItem(a, o) {
     var x = -1;
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (a[i] === o) {
         x = i;
         break;
@@ -455,9 +520,9 @@ export default {
   },
 
   reject(a, fn) {
-    if (!a || !a[LEN]) return [];
+    if (!a || !len(a)) return [];
     var b = [];
-    for (var i = 0, l = a[LEN]; i < l; i++) {
+    for (var i = 0, l = len(a); i < l; i++) {
       if (!fn(a[i]))
         b.push(a[i]);
     }
@@ -472,7 +537,7 @@ export default {
           a[x] = o[x];
       }
     } else {
-      for (var i = 0, l = arr[LEN]; i < l; i++) {
+      for (var i = 0, l = len(arr); i < l; i++) {
         var p = arr[i];
         if (hasOwnProperty(o, p))
           a[p] = o[p];
@@ -561,6 +626,8 @@ export default {
       return fn.apply({}, args.concat(bargs));
     };
   },
+
+  clone,
 
   /**
    * Returns a new function that can be fired only once every n milliseconds.
@@ -655,23 +722,7 @@ export default {
     }
   },
 
-  /**
-   * Returns the lenght of the given variable.
-   * Handles array, object keys, string and any other object with length property.
-   * 
-   * @param {*} o 
-   */
-  len(o) {
-    if (!o) return 0;
-    if (isPlainObject(o)) {
-      var i = 0;
-      for (let x in o) {
-        i++;
-      }
-      return i;
-    }
-    return "length" in o ? o.length : undefined;
-  },
+  len,
 
   nil(v) {
     return v === null || v === undefined;
