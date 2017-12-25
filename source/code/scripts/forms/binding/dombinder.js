@@ -43,10 +43,12 @@ class DomBinder extends EventsEmitter {
     
     // does the dataentry implement the event interface?
     if (_.quacks(dataentry, ["on", "trigger"])) {
-      self.listenTo(dataentry, "first:error", error => {
-        // focus the first invalid field
-        $.fire(error.field, "focus");
-      });
+      if (!dataentry.options.disableAutoFocus) {
+        self.listenTo(dataentry, "first:error", error => {
+          // focus the first invalid field
+          $.fire(error.field, "focus");
+        });
+      }
     }
   }
 

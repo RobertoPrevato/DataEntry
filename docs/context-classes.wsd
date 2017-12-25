@@ -1,0 +1,27 @@
+@startuml
+title Context Classes
+
+interface Decorator {
+  markFieldValid(field)
+  markFieldInvalid(field, error)
+  markFieldNeutrum(field)
+}
+
+interface Harvester {
+  getValue(field)
+  setValue(field, value)
+  getValues()
+}
+
+class ContextDecorator {
+  Marks fields state on objects in memory
+  validationTarget
+}
+
+class ContextHarvester {
+  Reads and writes values on objects in memory
+}
+
+Decorator --|> ContextDecorator
+Harvester --|> ContextHarvester
+@enduml

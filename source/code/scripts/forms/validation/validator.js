@@ -23,6 +23,7 @@ const isString = _.isString;
 const isFunction = _.isFunction;
 const isPlainObject = _.isPlainObject;
 const extend = _.extend;
+const failedValidationErrorKey = "failedValidation";
 
 
 function ruleParams(args, currentFieldRule) {
@@ -189,8 +190,14 @@ class Validator {
           var ruleMessage = currentFieldRule.message;
           if (ruleMessage)
             data.message = isFunction(ruleMessage) ? ruleMessage.apply(validator.dataentry, args) : ruleMessage;
-          else
-            data.message = validator.localizeError(data.message, ruleParams([], currentFieldRule));
+          else {
+            var errorKey = data.message;
+            var localizedMessage = validator.localizeError(errorKey, ruleParams([], currentFieldRule));
+            if (localizedMessage != errorKey) {
+              data.errorKey = errorKey;
+              data.message = localizedMessage;
+            }
+          }
 
           if (currentFieldRule.onError)
             currentFieldRule.onError.apply(validator.dataentry, args);
@@ -207,7 +214,8 @@ class Validator {
         // NB: this callback will be called if an exception happen during validation.
         a.push({
           error: true,
-          message: validator.localizeError("failedValidation", ruleParams([], currentFieldRule))
+          errorKey: failedValidationErrorKey,
+          message: validator.localizeError(failedValidationErrorKey, ruleParams([], currentFieldRule))
         });
         reject(a);// reject the validation chain
       }
