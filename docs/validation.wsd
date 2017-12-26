@@ -1,0 +1,23 @@
+@startuml
+ title Validation schema
+
+
+ :validate() (DataEntry);
+ note:returns a promise
+ fork
+   :Rule A;
+   :Rule B;
+   :Rule C;
+ fork again
+   :Rule A;
+   :Rule D;
+ fork again
+   :Rule E;
+ endfork
+ if (is valid?) then (yes)
+   :the validation promise is resolved \nwith values and { valid: true };
+   else (no)
+   :the validation promise is resolved \nwith errors and { valid: false };
+ endif
+ detach
+@enduml

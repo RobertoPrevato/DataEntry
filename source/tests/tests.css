@@ -1,0 +1,28 @@
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.test-wrapper {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid orange;
+}
+
+.test-wrapper .info {
+  font-style: italic;
+  font-size: 12px;
+  margin: 0 0 10px 0;
+}
+
+.tests-section {
+  margin-bottom: 20px;
+}
+
+.ug-message-element {
+  color: darkred;
+  font-weight: bold;
+}

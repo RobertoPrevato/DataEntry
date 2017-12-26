@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"search.exclude": {
+			"**/.git": true,
+			"**/node_modules": true,
+			"**/bower_components": true,
+			"**/tmp": true,
+			"**/dist": true,
+			"**/httpdocs": true,
+			"**/source/coverage": true,
+			"**/servers": true
+		}
+	}
+}

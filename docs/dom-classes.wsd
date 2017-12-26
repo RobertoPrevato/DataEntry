@@ -1,0 +1,39 @@
+@startuml
+title DOM Classes
+
+interface Decorator {
+  markFieldValid(field)
+  markFieldInvalid(field, error)
+  markFieldNeutrum(field)
+}
+
+interface Harvester {
+  getValue(field)
+  setValue(field, value)
+  getValues()
+}
+
+interface Binder {
+  constructor(DataEntry)
+  dispose()
+}
+
+class DomDecorator {
+  Marks fields through DOM manipulation
+}
+
+class DomHarvester {
+  Reads and writes values making DOM manipulation
+}
+
+class DomBinder {
+  Automatic validation on field blur.
+  Formatting on focus and after validation.
+  Automatic handling of constraints (keypress).
+}
+
+Decorator --|> DomDecorator
+Harvester --|> DomHarvester
+Binder --|> DomBinder
+
+@enduml

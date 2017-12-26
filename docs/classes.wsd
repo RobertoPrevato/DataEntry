@@ -1,0 +1,53 @@
+@startuml
+title Classes and interfaces
+
+interface Decorator {
+  markFieldValid(field)
+  markFieldInvalid(field, error)
+  markFieldNeutrum(field)
+}
+
+interface Harvester {
+  getValue(field)
+  setValue(field, value)
+  getValues()
+}
+
+interface Localizer {
+  t(key, parameters)
+  lookup(string key)
+}
+
+interface Binder {
+  constructor(DataEntry)
+  dispose()
+}
+
+class Validator {
+  rules
+  validate(...)
+}
+
+class Formatter {
+  rules
+  format(...)
+}
+
+class DataEntry {
+  schema
+  Decorator marker
+  Harvester harvester
+  Validator validator
+  Formatter formatter
+  validate()
+  validateField()
+  configure(options)
+}
+
+DataEntry --> Validator : to validate fields
+DataEntry --> Formatter : to format values
+DataEntry --> Decorator : to decorate fields
+DataEntry --> Harvester : to get and set values for fields
+DataEntry -> Localizer : to localize error messages
+DataEntry ---> Binder : to apply extra bindings \n(optional)
+@enduml

@@ -41,3 +41,6 @@ node_modules
 *.sh.swn
 *.sh.swo
 *.sh.swp
+
+node_modules
+dist

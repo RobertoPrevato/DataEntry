@@ -1,0 +1,36 @@
+@startuml
+title DataEntry validation and chains
+
+package "DataEntry validate()" {
+  folder  "Field c" {
+    [Rule c.1]
+  }
+  folder  "Field b" {
+    [Rule b.1] --> [Rule b.2]
+  }
+  folder  "Field a" {
+    [Rule a.1] --> [Rule a.2]
+    [Rule a.2] --> [Rule a.3]
+    [Rule a.3] --> [Rule a.4]
+  }
+}
+
+[Rule c.1] --> [completion]
+[Rule b.2] --> [completion]
+[Rule a.4] --> [completion]
+
+note right of [Rule c.1]
+  whole dataentry validation is a promise;
+  for each field a validation chain is produced;
+  each validation chain is a promise that
+  completes when its first validation rule fails, or all succeed;
+  each rule produces a promise, too;
+  --
+  in this example, three fields a, b, c have 4, 2 and 1 validation rule
+end note
+
+note right of [completion]
+  DataEntry validation promise completes when all 
+  validation chains are either resolved or rejected
+end note
+@enduml
