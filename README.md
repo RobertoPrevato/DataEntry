@@ -70,12 +70,7 @@ DataEntry.configure({
 })
 ```
 
-<<<<<<< HEAD
-Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should only be used for exceptional situations, the new implementation of DataEntry always resolve the promises used during the validation of fields and forms, returning a value indicating whether a form is valid or not.
-Therefore any rejection can only be caused by an unhandled exception happened while applying validation logic, and is ultimately related to a bug in the code or flow error (for example, when a call to external web api fails). In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
-=======
 ## Promise based validation
 Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should be used only for exceptional situations (_ref. [Rejections should be exceptional](https://www.w3.org/2001/tag/doc/promises-guide#rejections-should-be-exceptional)_), the DataEntry library always resolve the promises utilized during the validation of fields and forms: returning a value indicating whether a form is valid or not. Rejection should only happen due to bugs in source code or rejection of a validation rule promise (for example, in case a validation rule requires an AJAX request and a web request completes with status 500).
 Therefore any rejection must be caused by an unhandled exception happened while applying validation logic, and is ultimately related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
->>>>>>> es6
 Furthermore, the native Promise doesn't feature `done` and `fail` functions: the success and failure callbacks are both passed to the `then` function instead.
