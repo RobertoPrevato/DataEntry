@@ -43,4 +43,4 @@ node_modules
 *.sh.swp
 
 node_modules
-dist/**
+dist

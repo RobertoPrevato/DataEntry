@@ -1,11 +1,11 @@
-const WWWROOT = "../dist/";
+const WWWROOT = "../distribution/";
 const JS_DEST = WWWROOT + "scripts/";
 const CSS_DEST = WWWROOT + "styles/";
 const IMG_DEST = WWWROOT + "images/";
 const FONTS_DEST = WWWROOT + "styles/fonts/";
 
 const year = new Date().getFullYear();
-const VERSION = "2.0.0"
+const VERSION = "2.0.1"
 const LICENSE = `
 /**
  * DataEntry ${VERSION}#COMMENT#
@@ -24,13 +24,13 @@ module.exports = {
   // root folder to less source code
   lessRoot: "./code/styles/**/*.less",
 
-  distFolder: "../dist/",
-  cssDistFolder: "../dist/styles/",
+  distFolder: "../distribution/",
+  cssDistFolder: "../distribution/styles/",
 
   license: LICENSE,
   version: VERSION,
 
-  lessToCss: [
+  lessToCss: [/*
     {
       src: "./code/styles/dataentry/dataentry.less",
       dest: CSS_DEST
@@ -39,7 +39,7 @@ module.exports = {
       src: "./code/styles/examples.less",
       dest: CSS_DEST,
       nodist: true
-    }
+    }*/
   ],
   
   // less code built only for distribution package
@@ -47,40 +47,28 @@ module.exports = {
 
   esToJs: [
     {
-      entry: "./code/dataentry.js",
+      entry: "./distributionfiles/dataentry.js",
       destfolder: JS_DEST,
       filename: "dataentry",
-      comment: ""
+      comment: "core classes only"
     },
     {
-      entry: "./code/dataentry-dom.js",
+      entry: "./distributionfiles/dataentry-dom.js",
       destfolder: JS_DEST,
       filename: "dataentry-dom",
-      comment: "DOM classes"
+      comment: "with built-in DOM classes"
     },
     {
-      entry: "./code/dataentry-context.js",
+      entry: "./distributionfiles/dataentry-context.js",
       destfolder: JS_DEST,
       filename: "dataentry-context",
-      comment: "Context classes"
+      comment: "with built-in context classes"
     }
   ],
 
   toBeCopied: [
     {
-      src: "code/favicon.ico",
-      dest: WWWROOT
-    },
-    {
-      src: "code/*.png",
-      dest: WWWROOT
-    },
-    {
-      src: "code/images/*",
-      dest: IMG_DEST
-    },
-    {
-      src: "libs/**/*.*",
+      src: "./code/styles/dataentry.css",
       dest: WWWROOT
     }
   ],

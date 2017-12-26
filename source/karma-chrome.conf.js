@@ -44,7 +44,7 @@ module.exports = config => {
       "code/tests/*.spec.js",
       "code/tests/**/*.spec.js",
       "code/scripts/**/*.js",
-      "tests/dataentry.css",
+      "code/styles/dataentry.css",
       "tests/tests.css"
     ],
 

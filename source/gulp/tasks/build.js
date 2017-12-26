@@ -28,7 +28,7 @@ gulp.task("js-build", () => {
   });
 });
 
-gulp.task("dist", () => {
+gulp.task("js-dist", () => {
   config.esToJs.forEach(o => {
     var filename = o.filename + ".js";
     browserify(o.entry, { debug: false })
@@ -136,3 +136,5 @@ gulp.task("watch-es", watch => {
 gulp.task("dev-init", ["js-build", "css-min", "copy-static"]);
 
 gulp.task("env-init", ["js-dist", "css-min", "copy-static"]);
+
+gulp.task("dist", ["js-dist", "copy-static"])

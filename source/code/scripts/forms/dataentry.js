@@ -115,7 +115,7 @@ class DataEntry extends EventsEmitter {
    * @param {object} options 
    */
   static configure(options) {
-    each(options, (k, v) => {
+    each(options, (v, k) => {
       DataEntry.defaults[k] = v;
     });
   }

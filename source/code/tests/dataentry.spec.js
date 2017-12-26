@@ -85,6 +85,28 @@ describe("DataEntry", () => {
     expect(a.context).toBe(context);
   })
 
+  it("must support altering defaults with `configure` method", () => {
+    DataEntry.configure({
+      foo: "Unit test",
+      hello: 20
+    })
+
+    expect(DataEntry.defaults.foo).toEqual("Unit test");
+    expect(DataEntry.defaults.hello).toEqual(20);
+    var context = {};
+    var a = new DataEntry({
+      context: context,
+      schema: {
+        name: ["required"]
+      },
+      marker: new TestMarker(context),
+      harvester: new TestHarvester(context)
+    })
+
+    expect(a.options.foo).toEqual("Unit test");
+    expect(a.options.hello).toEqual(20);
+  })
+
   it("must implement validation of required fields", always => {
     var data = {
       name: null

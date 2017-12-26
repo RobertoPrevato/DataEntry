@@ -6,6 +6,8 @@
   "main": "./dataentry-entry.js",
   "files": [
     "dataentry-entry.js",
+    "dom.js",
+    "context.js",
     "dist"
   ],
   "author": {
