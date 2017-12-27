@@ -13,7 +13,9 @@
 			"**/dist": true,
 			"**/httpdocs": true,
 			"**/source/coverage": true,
-			"**/servers": true
+			"**/servers": true,
+			"**/distribution/": true,
+			"**/dist/": true
 		}
 	}
 }

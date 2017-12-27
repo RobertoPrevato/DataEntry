@@ -50,6 +50,13 @@ function foreseeValue(e) {
 }
 
 
+function onlyDigits(e, c) {
+  var c = (e.keyCode || e.charCode), key = stringFromCode(c);
+  if (!permittedCharacters(e, c) && !match(key, /\d/)) return false;
+  return true;
+}
+
+
 const Constraints = {
 
   // Allows to input only letters
@@ -60,11 +67,9 @@ const Constraints = {
   },
 
   // Allows to input only digits
-  digits: function (e, c) {
-    var c = (e.keyCode || e.charCode), key = stringFromCode(c);
-    if (!permittedCharacters(e, c) && !match(key, /\d/)) return false;
-    return true;
-  }
+  digits: onlyDigits,
+
+  integer: onlyDigits
 };
 
 export { 

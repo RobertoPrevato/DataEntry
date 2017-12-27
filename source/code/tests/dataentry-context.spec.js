@@ -86,7 +86,8 @@ describe("DataEntry with context classes", () => {
         name: ["required"]
       },
       context: {},
-      validationTarget: {}
+      validationTarget: {},
+      sourceObject: {}
     })
 
     dataentry.dispose();
@@ -94,5 +95,6 @@ describe("DataEntry with context classes", () => {
     expect(dataentry.context).toBeUndefined();
     expect(dataentry.marker).toBeUndefined();
     expect(dataentry.harvester).toBeUndefined();
+    expect(dataentry.options).toBeUndefined();
   })
 })

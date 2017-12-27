@@ -89,7 +89,8 @@ class DomDecorator {
    */
   constructor(dataentry) {
     this.dataentry = dataentry;
-    this.markStyle = dataentry ? dataentry.options.markStyle : TOOLTIPS;
+    // default to tooltips if not specified otherwise
+    this.markStyle = dataentry ? (dataentry.options.markStyle || TOOLTIPS) : TOOLTIPS;
     this._elements = [];
   }
 
@@ -158,7 +159,7 @@ class DomDecorator {
       arrow = createElement(divtag),
       p = createElement("p");
     addClass(wrapper, "ug-validation-wrapper");
-    addClass(tooltip, "tooltip validation-tooltip in " + o.position);
+    addClass(tooltip, "tooltip validation-tooltip in " + (o.position || "right"));
     addClass(arrow, "tooltip-arrow");
     addClass(p, "tooltip-inner");
     append(wrapper, tooltip);

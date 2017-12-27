@@ -38,12 +38,13 @@ class DomBinder extends EventsEmitter {
     if (!dataentry.element)
       raise(20, "missing `element` in dataentry");
     self.fn = {};
-    if (self.element !== true)
-    self.bind();
-    
+
     var options = dataentry ? dataentry.options : null;
     self.constraints = _.extend({}, Constraints, options.constraintRules);
 
+    if (self.element !== true)
+    self.bind();
+    
     // does the dataentry implement the event interface?
     if (_.quacks(dataentry, ["on", "trigger"])) {
       if (!dataentry.options.disableAutoFocus) {
@@ -136,7 +137,7 @@ class DomBinder extends EventsEmitter {
         } else {
           raise(5, constraint);
         }
-      } else if (dataentry.options.useImplicitConstraints) {
+      } else if (dataentry.options.useImplicitConstraints !== false) {
         // set implicit constraints by validator names, if available
         // check validation schema
         var validation = ox.validation || ox;
@@ -235,7 +236,7 @@ class DomBinder extends EventsEmitter {
         validator = dataentry.validator,
         formatter = dataentry.formatter,
         marker = dataentry.marker,
-        allowImplicitFormat = dataentry.options.allowImplicitFormat;
+        useImplicitFormat = dataentry.options.useImplicitFormat !== false;
 
     return function (e, forced) {
       // validate only after user interaction

@@ -7,16 +7,16 @@ Forms validation library that implements Promise based validation of fields and 
 ## Objectives
 The objectives of the DataEntry library are:
 * to enable the implementation of application-wide validation strategy: centralizing the logic that displays error messages, marks fields in valid or invalid state, and applies validation and formatting rules
-* to implement Promise based validation of fields and forms, therefore supporting validation rules resolved asynchronously (e.g. rules involving AJAX requests) as part of validation process
-* to define validation rules for fields in a declarative way
-* enabling the definition of new validation and formatting rules in a simple way
-* to provide rich built-in handlers of DOM events, pluggable (they can be disabled, if desired)
+* to simplify the definition of asynchronous validation rules (for example, rules involving AJAX requests)
+* to provide a simple way to define new validation and formatting rules
+* to support definition of validation and formatting criteria in a declarative way
+* to also be suitable for Node.js servers and desktop applications implemented with Electron (not only web applications)
 
 ## Features
 * ES6 source code
 * Unit tested source code
 * Promise based validation of fields and forms
-* automatic decoration of fields (valid state, invalid state, neuter)
+* automatic decoration of fields (valid state, invalid state, neutral)
 * logic to define validation rules
 * logic to define formatting rules
 * logic to apply pre-formatting rules (formatting to be applied upon field focus)
@@ -28,16 +28,9 @@ The objectives of the DataEntry library are:
 The library is designed to clearly separate functions that do business logic from classes that read / write values and mark fields as valid or invalid. See [Core classes and design](https://github.com/RobertoPrevato/DataEntry/wiki/Core-classes-and-design) for more information.
 
 ## Validation schema
-When a DataEntry is created with a schema describing validation rules for fields, it can be used to validate all fields, using its `validate()` method. This method returns a promise that completes when all validation chains for each field completes. Every validation chain is a promise that completes when either the first validation rule fails (resolved with error result or rejected), or all validation rules succeed. This way, every field can have asynchronous methods as part of their validation and all errors are populated at once (the first error for each field). If AJAX requests are necessary to validate certain fields, they can and should be executed after synchronous validation that may happen on the client side, to avoid AJAX requests for a value that it's already known to be invalid.
-
-Validation rules can be defined with synchronous functions (like the built-in `required` validation rule), they are automatically wrapped inside a Promise. This is intentional, so programmers can write simple code for methods that can be resolved synchronously.
+In DataEntry, the validation of a group of fields is a promise, composed of validation chains (one for each field defined in the dataentry `schema` object). Each validation chain is a promise that completes when either the first validation rule fails (resolved with error result or rejected), or all validation rules succeed. This way, every field can have asynchronous methods as part of their validation and all errors are populated at once (the first error for each field). If AJAX requests are necessary to validate certain fields, they can and should be executed after synchronous validation that may happen on the client side, to avoid AJAX requests for a value that it's already known to be invalid.
 
 ![Validation and chains](https://raw.githubusercontent.com/RobertoPrevato/DataEntry/master/docs/renders/validation-and-chains.svg?sanitize=true)
-
-## Promise based validation
-Since the [official WC3 specification of the ES6 Promise](https://www.w3.org/2001/tag/doc/promises-guide) specifies that the rejection should be used only for exceptional situations (_ref. [Rejections should be exceptional](https://www.w3.org/2001/tag/doc/promises-guide#rejections-should-be-exceptional)_), the DataEntry library always resolve the promises utilized during the validation of fields and forms: returning a value indicating whether a form is valid or not. Rejection should only happen due to bugs in source code or rejection of a validation rule promise (for example, in case a validation rule requires an AJAX request and a web request completes with status 500).
-Therefore any rejection must be caused by an unhandled exception happened while applying validation logic, and is ultimately related to a bug in the code. In such situations the DataEntry widget is designed to decorate the field for which the validation caused exception and consider the whole form invalid.
-Furthermore, the native Promise doesn't feature `done` and `fail` functions: the success and failure callbacks are both passed to the `then` function instead.
 
 ## Use downloading distribution files
 DataEntry library can be used downloading and using distribution files, in `distribution` folder.
@@ -84,4 +77,4 @@ DataEntry.configure({
 ```
 
 ## For more information
-Refer to the rich documentation in [GitHub wiki](https://github.com/RobertoPrevato/DataEntry/wiki), or contact the author at: `roberto.prevato@gmail.com`.
+Refer to the rich documentation in [GitHub wiki](https://github.com/RobertoPrevato/DataEntry/wiki).

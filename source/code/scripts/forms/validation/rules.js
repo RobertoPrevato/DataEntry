@@ -80,9 +80,9 @@ const ValidationRules = {
     if (options) {
       var intVal = parseInt(value);
       if (isNumber(options.min) && intVal < options.min)
-        return getError("minValue", options, arguments);
+        return getError("minValue", arguments);
       if (isNumber(options.max) && intVal > options.max)
-        return getError("maxValue", options, arguments);
+        return getError("maxValue", arguments);
     }
     return true;
   },
