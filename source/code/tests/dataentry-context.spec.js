@@ -77,4 +77,22 @@ describe("DataEntry with context classes", () => {
       always();
     }, noReject(always))
   })
+
+  it("must support disposing of properties (Context classes)", () => {
+    const dataentry = new DataEntry({
+      marker: ContextDecorator,
+      harvester: ContextHarvester,
+      schema: {
+        name: ["required"]
+      },
+      context: {},
+      validationTarget: {}
+    })
+
+    dataentry.dispose();
+
+    expect(dataentry.context).toBeUndefined();
+    expect(dataentry.marker).toBeUndefined();
+    expect(dataentry.harvester).toBeUndefined();
+  })
 })

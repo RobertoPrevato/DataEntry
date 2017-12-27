@@ -331,6 +331,7 @@ export default {
    * @returns {this}
    */
   off(element, type) {
+    const toRemove = [];
     if (!isElement(element))
       // element could be a text element or a comment
       return;
@@ -339,8 +340,10 @@ export default {
         // unset event listeners by namespace
         var ns = type.substr(1);
         each(HANDLERS, (o) => {
+          // remove the event handler
           if (o.el === element && o.ns == ns) {
             o.el.removeEventListener(o.ev, o.fn, true);
+            toRemove.push(o);
           }
         });
       } else {
@@ -349,22 +352,34 @@ export default {
         var eventName = parts[0], ns = parts[1];
         each(HANDLERS, (o) => {
           if (o.el === element && o.ev == eventName && (!ns || o.ns == ns)) {
+            // remove the event handler
             o.el.removeEventListener(o.ev, o.fn, true);
+            toRemove.push(o);
           }
         });
       }
     } else {
       each(HANDLERS, (o) => {
         if (o.el === element) {
+          // remove the event handler
           o.el.removeEventListener(o.ev, o.fn, true);
+          toRemove.push(o);
         }
       });
     }
+    // remove event handlers
+    _.removeItems(HANDLERS, toRemove);
   },
 
   /**
-   * Removes all event handlers set by DOM helper.
-   * @returns {this}
+   * Expose event handlers singleton, for debugging and testing purpose.
+   */
+  eventHandlers() {
+    return HANDLERS;
+  },
+
+  /**
+   * Removes all active event handlers.
    */
   offAll() {
     var self = this, element;
@@ -372,6 +387,9 @@ export default {
       element = o.el;
       element.removeEventListener(o.ev, o.fn, true);
     });
+    while (HANDLERS.length) {
+      HANDLERS.pop();
+    }
     return self;
   },
 

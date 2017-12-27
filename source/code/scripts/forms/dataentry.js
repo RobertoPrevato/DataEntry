@@ -130,12 +130,17 @@ class DataEntry extends EventsEmitter {
       "marker", 
       "formatter", 
       "harvester", 
-      "validator"], name => {
+      "validator",
+      "context"], name => {
       var o = self[name];
       if (o && o.dispose)
         o.dispose();
-      self[name] = null;
+      delete self[name];
     })
+    each(["validationContext"], name => {
+      delete self.options[name];
+    })
+    delete self.options;
     return self;
   }
 

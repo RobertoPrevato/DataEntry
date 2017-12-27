@@ -594,4 +594,100 @@ describe("DataEntry", () => {
       always()
     }, noReject(always));
   });
+
+  it("must support error messages specified in schema", always => {
+    var data = {
+      foo: null,
+      key: ""
+    };
+
+    var a = new DataEntry({
+      schema: {
+        foo: [{ name: "required", message: "A foo is required" }],
+        key: [{ name: "required", message: "A key is required" }]
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    a.validate().then(results => {
+      // validation must fail;
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_foo"]).toEqual("invalid: A foo is required");
+      expect(data["_(deco)_key"]).toEqual("invalid: A key is required");
+
+      always()
+    }, noReject(always));
+  });
+
+  it("error messages specified in schema must bypass the localizer", always => {
+    var data = {
+      foo: null,
+      key: "",
+      ufo: null
+    };
+
+    var a = new DataEntry({
+      schema: {
+        foo: [{ name: "required", message: "A foo is required" }],
+        key: [{ name: "required", message: "A key is required" }],
+        ufo: ["required"]
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data),
+      localizer: {
+        t: function (key) {
+          return "Hello, World"
+        },
+        lookup: function () {
+          return true;
+        }
+      }
+    })
+
+    a.validate().then(results => {
+      // validation must fail;
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_foo"]).toEqual("invalid: A foo is required");
+      expect(data["_(deco)_key"]).toEqual("invalid: A key is required");
+      expect(data["_(deco)_ufo"]).toEqual("invalid: Hello, World");
+
+      always()
+    }, noReject(always));
+  });
+
+  it("must support error messages specified in schema, using functions", always => {
+    var data = {
+      foo: null,
+      key: ""
+    };
+
+    var a = new DataEntry({
+      schema: {
+        foo: [{ 
+          name: "required", 
+          message: function () {
+            return "A foo is required";
+          }
+        }],
+        key: [{ 
+          name: "required", 
+          message: () => {
+            return "A key is required"
+          }
+        }]
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    a.validate().then(results => {
+      // validation must fail;
+      expect(results.valid).toEqual(false, "Validation must fail")
+      expect(data["_(deco)_foo"]).toEqual("invalid: A foo is required");
+      expect(data["_(deco)_key"]).toEqual("invalid: A key is required");
+
+      always()
+    }, noReject(always));
+  });
 })

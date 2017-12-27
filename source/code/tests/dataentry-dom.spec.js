@@ -11,6 +11,7 @@
 import DataEntry from "../scripts/forms/dataentry"
 import DomHarvester from "../scripts/forms/harvesting/domharvester"
 import DomDecorator from "../scripts/forms/decoration/domdecorator"
+import DomBinder from "../scripts/forms/binding/dombinder"
 import _ from "../scripts/utils"
 import $ from "../scripts/dom"
 import { raiseSettings } from "../scripts/raise"
@@ -178,5 +179,39 @@ describe("DataEntry with DOM classes", () => {
         schema: {}
       })
     }).toThrow(new Error("missing 'element' in dataentry. Specify an HTML element for the dataentry, in order to use the DomHarvester. For further details: https://github.com/RobertoPrevato/DataEntry/wiki/Errors#8"));
+  })
+
+  it("must support disposing of properties (DOM classes)", () => {
+    var wrapper = arrange(`
+    <p>Nothing necessary here</p>
+    `, "disposing of DOM classes");
+
+    const dataentry = new DataEntry({
+      element: wrapper,
+      marker: DomDecorator,
+      harvester: DomHarvester,
+      binder: DomBinder,
+      schema: {
+        name: {
+          validation: ["required"]
+        }
+      }
+    })
+
+    const eventHandlers = $.eventHandlers();
+    var anyAssociatedToElement = _.any(eventHandlers, handler => {
+      return handler.el === wrapper;
+    })
+    expect(dataentry.binder.element).toEqual(wrapper);
+    expect(anyAssociatedToElement).toEqual(true, "DomBinder must bind event handlers to the dataentry.element");
+
+    dataentry.dispose();
+
+    // the wrapper element must not have any event handler associated
+    anyAssociatedToElement = _.any(eventHandlers, handler => {
+      return handler.el === wrapper;
+    })
+    expect(dataentry.binder).toEqual(undefined);
+    expect(anyAssociatedToElement).toEqual(false, "After disposing, no event handler must be associated to the wrapper element");
   })
 })

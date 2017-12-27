@@ -41,6 +41,9 @@ class DomBinder extends EventsEmitter {
     if (self.element !== true)
     self.bind();
     
+    var options = dataentry ? dataentry.options : null;
+    self.constraints = _.extend({}, Constraints, options.constraintRules);
+
     // does the dataentry implement the event interface?
     if (_.quacks(dataentry, ["on", "trigger"])) {
       if (!dataentry.options.disableAutoFocus) {
@@ -53,17 +56,19 @@ class DomBinder extends EventsEmitter {
   }
 
   dispose() {
+    const self = this;
     self.unbind();
 
     // delete handlers
-    for (var x in this.fn) {
-      delete this.fn[x];
+    for (var x in self.fn) {
+      delete self.fn[x];
     }
 
-    if (_.quacks(this.dataentry, ["on", "trigger"]))
-      this.stopListening(this.dataentry);
-    this.dataentry = null;
-    this.element = null;
+    if (_.quacks(self.dataentry, ["on", "trigger"]))
+      self.stopListening(self.dataentry);
+    self.dataentry = null;
+    self.element = null;
+    self.constraints = null;
   }
 
   bind() {
@@ -106,6 +111,7 @@ class DomBinder extends EventsEmitter {
    */
   getConstraintsDefinition() {
     var self = this, 
+        constraints = self.constraints,
         dataentry = self.dataentry,
         schema = dataentry.schema;
 
@@ -122,11 +128,11 @@ class DomBinder extends EventsEmitter {
         if (isFunction(constraint)) constraint = constraint.call(dataentry.context || dataentry);
 
         // constraint must be a single function name
-        if (hasOwnProperty(Constraints, constraint)) {
+        if (hasOwnProperty(constraints, constraint)) {
           // set reference in events object
           o[ev] = functionName;
           // set function
-          self.fn[functionName] = Constraints[constraint];
+          self.fn[functionName] = constraints[constraint];
         } else {
           raise(5, constraint);
         }
@@ -140,11 +146,11 @@ class DomBinder extends EventsEmitter {
           for (var i = 0, l = len(validation); i < l; i++) {
 
             var name = isString(validation[i]) ? validation[i] : validation[i].name;
-            if (_.has(Constraints, name)) {
+            if (_.has(constraints, name)) {
               // set reference in events object
               o[ev] = functionName;
               // set function
-              self.fn[functionName] = Constraints[name];
+              self.fn[functionName] = constraints[name];
             }
           }
         }

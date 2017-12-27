@@ -519,6 +519,12 @@ export default {
     a.splice(x, 1);
   },
 
+  removeItems(a, b) {
+    each(b, toRemove => {
+      this.removeItem(a, toRemove);
+    });
+  },
+
   reject(a, fn) {
     if (!a || !len(a)) return [];
     var b = [];
