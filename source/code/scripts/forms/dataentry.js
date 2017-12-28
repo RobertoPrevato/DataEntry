@@ -303,7 +303,7 @@ class DataEntry extends EventsEmitter {
           matchingFormatRule.push(name);
       })
       if (matchingFormatRule.length) {
-        formattedValue = self.formatter.format(name, field, value);
+        formattedValue = self.formatter.format(matchingFormatRule, field, value);
       }
     }
     if (formattedValue !== value) {
