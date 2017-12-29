@@ -28,7 +28,9 @@ const DEFAULTS = {
 
   localizer: null, // used to localize error messages
 
-  binder: null
+  binder: null,
+
+  triggersDelay: undefined // let specify a delay for validation triggers
 }
 
 const len = _.len;
@@ -153,18 +155,26 @@ class DataEntry extends EventsEmitter {
    */
   validate(fields, options) {
     var self = this;
+    options = options || {};
     if (fields && isFunction(fields)) fields = fields.call(self);
-    if (fields && !isArray(fields)) raise(9); // invalid parameter: fields must be an array of strings
+    if (fields && !isArray(fields)) raise(9, "validate `fields` argument must be an array of strings"); // invalid parameter: fields must be an array of strings
 
     var schema = self.schema;
     if (!schema) raise(11);
 
     return new Promise(function (resolve, reject) {
-      var chain = [];
+      var chain = [], validatingFields = [];
       for (var x in schema) {
         if (fields && !contains(fields, x)) continue;
-        chain.push(self.validateField(x, options));
+        validatingFields.push(x); // names of fields being validated
       }
+
+      options.validatingFields = validatingFields; // so we don't trigger validation for fields being validated
+
+      each(validatingFields, fieldName => {
+        chain.push(self.validateField(fieldName, options));
+      })
+      
 
       Promise.all(chain).then(function (a) {
         var data = flatten(a);
@@ -203,6 +213,7 @@ class DataEntry extends EventsEmitter {
   validateField(fieldName, options) {
     // set options with default values
     options = extend({
+      depth: 0,
       onlyTouched: false
     }, options || {});
     var self = this, schema = self.schema;
@@ -241,7 +252,7 @@ class DataEntry extends EventsEmitter {
     each(fields, function (field) {
       var value = self.harvester.getValue(field);
 
-      //mark field neutrum before validation
+      // mark field neutrum before validation
       marker.markFieldNeutrum(field);
       
       var p = validator.validate(validation, field, value).then(function (data) {
@@ -260,7 +271,7 @@ class DataEntry extends EventsEmitter {
         }
         
         // the field is valid; its value can be formatted;
-        self.onGoodValidation(fieldSchema, field, fieldName, value);
+        self.onGoodValidation(fieldSchema, field, fieldName, value, options);
 
         marker.markFieldValid(field);
         return data;
@@ -286,7 +297,12 @@ class DataEntry extends EventsEmitter {
     });
   }
 
-  onGoodValidation(fieldSchema, field, fieldName, value) {
+  onGoodValidation(fieldSchema, field, fieldName, value, options) {
+    this.formatAfterValidation(fieldSchema, field, fieldName, value)
+        .handleTriggers(fieldSchema, field, fieldName, value, options);
+  }
+
+  formatAfterValidation(fieldSchema, field, fieldName, value) {
     var self = this;
     var format = fieldSchema.format, validation = fieldSchema.validation;
     if (isFunction(format)) format = format.call(self, f, value);
@@ -308,6 +324,41 @@ class DataEntry extends EventsEmitter {
     }
     if (formattedValue !== value) {
       self.harvester.setValue(field, formattedValue, self, fieldName);
+    }
+    return self;
+  }
+
+  handleTriggers(fieldSchema, field, fieldName, value, options) {
+    var trigger = fieldSchema.trigger;
+    if (!trigger) return this;
+
+    // don't repeat validation for fields already being validated
+    trigger = _.reject(trigger, o => {
+      return o === fieldName || _.contains(options.validatingFields, o);
+    })
+
+    if (!len(trigger))
+      return this;
+
+    var self = this, 
+        dataentryOptions = self.options,
+        triggersDelay = dataentryOptions.triggersDelay;
+    // avoid recursive calls
+    if (options.depth > 0) {
+      return self;
+    }
+    var depth = 1;
+
+    if (_.isNumber(triggersDelay)) {
+      setTimeout(() => {
+        self.validate(trigger, {
+          depth: depth
+        });
+      }, triggersDelay)
+    } else {
+      self.validate(trigger, {
+        depth: depth
+      });
     }
     return self;
   }

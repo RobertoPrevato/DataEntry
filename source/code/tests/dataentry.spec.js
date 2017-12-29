@@ -1,5 +1,5 @@
 /**
- * Tests for core DataEntry class.
+ * Tests for core DataEntry classes.
  * https://github.com/RobertoPrevato/DataEntry
  *
  * Copyright 2017, Roberto Prevato
@@ -689,5 +689,243 @@ describe("DataEntry", () => {
 
       always()
     }, noReject(always));
+  })
+
+  it("must support validation of specific fields", always => {
+    var data = {};
+    var aCall = 0;
+    var bCall = 0;
+    var cCall = 0;
+
+    const a = new DataEntry({
+      schema: {
+        a: {
+          validation: function () {
+            aCall++;
+            return ["none"];
+          }
+        },
+        b: {
+          validation: function () {
+            bCall++;
+            return ["none"];
+          }
+        },
+        c: {
+          validation: function () {
+            cCall++;
+            return ["none"];
+          }
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    // validate especially `a` field:
+    a.validate(["a"]).then(results => {
+      expect(aCall).toEqual(1)
+      expect(bCall).toEqual(0)
+      expect(cCall).toEqual(0)
+
+      return a.validate(["a"]);
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(0)
+      expect(cCall).toEqual(0)
+
+      return a.validate(["c"])
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(0)
+      expect(cCall).toEqual(1)
+  
+      return a.validate(["b", "c"])
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(1)
+      expect(cCall).toEqual(2)
+
+      always()
+    }).catch(noReject(always));
+  });
+
+  it("must support validation triggers between fields", always => {
+    var data = {};
+    var aCall = 0;
+    var bCall = 0;
+    var cCall = 0;
+
+    const a = new DataEntry({
+      schema: {
+        a: {
+          validation: function () {
+            aCall++;
+            return ["none"];
+          },
+          trigger: ["b"]
+        },
+        b: {
+          validation: function () {
+            bCall++;
+            return ["none"];
+          }
+        },
+        c: {
+          validation: function () {
+            cCall++;
+            return ["none"];
+          }
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    // validate especially `a` field:
+    a.validate(["a"]).then(results => {
+      expect(aCall).toEqual(1)
+      expect(bCall).toEqual(1)
+      expect(cCall).toEqual(0)
+
+      return a.validate(["a"]);
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(2)
+      expect(cCall).toEqual(0)
+
+      return a.validate(["c"])
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(2)
+      expect(cCall).toEqual(1)
+  
+      return a.validate(["b", "c"])
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(3)
+      expect(cCall).toEqual(2)
+
+      always()
+    }).catch(function () {
+      console.error(arguments);
+      always();
+    });
+  });
+
+  it("must support fields triggering validation for each other", always => {
+    var data = {};
+    var aCall = 0;
+    var bCall = 0;
+
+    const a = new DataEntry({
+      schema: {
+        a: {
+          validation: function () {
+            aCall++;
+            return ["none"];
+          },
+          trigger: ["b"]
+        },
+        b: {
+          validation: function () {
+            bCall++;
+            return ["none"];
+          },
+          trigger: ["a"]
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    // validate especially `a` field:
+    a.validate(["a"]).then(results => {
+      expect(aCall).toEqual(1)
+      expect(bCall).toEqual(1)
+
+      return a.validate(["b"]);
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(2)
+      return a.validate(["a", "b"])
+    }).then(results => {
+      expect(aCall).toEqual(3)
+      expect(bCall).toEqual(3)
+  
+      return a.validate(["a"]);
+    }).then(results => {
+      expect(aCall).toEqual(4)
+      expect(bCall).toEqual(4)
+  
+      always();
+    }).catch(function () {
+      console.error(arguments);
+      always();
+    });
+  });
+
+  it("must handle triggers to not fire validation for fields being validated", always => {
+    var data = {};
+    var aCall = 0;
+    var bCall = 0;
+    var cCall = 0;
+
+    const a = new DataEntry({
+      schema: {
+        a: {
+          validation: function () {
+            aCall++;
+            return ["none"];
+          },
+          trigger: ["b"]
+        },
+        b: {
+          validation: function () {
+            bCall++;
+            return ["none"];
+          },
+          trigger: ["a"]
+        },
+        c: {
+          validation: function () {
+            cCall++;
+            return ["none"];
+          },
+          trigger: ["a"]
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    a.validate().then(results => {
+      expect(aCall).toEqual(1)
+      expect(bCall).toEqual(1)
+      expect(cCall).toEqual(1)
+
+      return a.validate(["b"]);
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(2)
+      expect(cCall).toEqual(1)
+
+      return a.validate(["a", "b"])
+    }).then(results => {
+      expect(aCall).toEqual(3)
+      expect(bCall).toEqual(3)
+      expect(cCall).toEqual(1)
+  
+      return a.validate(["c"]);
+    }).then(results => {
+      expect(aCall).toEqual(4)
+      expect(bCall).toEqual(3)
+      expect(cCall).toEqual(2)
+  
+      always();
+    }).catch(function () {
+      console.error(arguments);
+      always();
+    });
   });
 })

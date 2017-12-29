@@ -47,7 +47,7 @@ class ContextHarvester {
     var options = dataentry.options || {};
     var obj = options.sourceObject || dataentry.context;
     if (!obj)
-      raise(18, "missing context for ContextHarvester")
+      raise(18, "missing 'context' or 'sourceObject' for ContextHarvester")
 
     this.dataentry = dataentry;
     this.source = obj;

@@ -28,6 +28,9 @@ class DomHarvester {
    * @param dataentry: instance of DataEntry.
    */
   constructor(dataentry) {
+    if (!dataentry)
+      raise(2, "missing 'dataentry' for DomHarvester");
+
     var element = dataentry.element;
     if (!element)
       // requires a configured element for the dataentry
@@ -35,6 +38,26 @@ class DomHarvester {
 
     this.dataentry = dataentry;
     this.element = element;
+
+    const options = dataentry.options || {};
+    const context = options.sourceObject || dataentry.context;
+    
+    // set automatically values for the dataentry:
+    if (context) {
+      debugger
+      this.setValues(context);
+    }
+  }
+
+  /**
+   * Sets the values using the given object.
+   * 
+   * @param {object} context 
+   */
+  setValues(context) {
+    for (let x in context) {
+      this.setValue(x, context[x]);
+    }
   }
 
   /**
@@ -53,7 +76,17 @@ class DomHarvester {
     return this.getValuesFromElement(this.element);
   }
 
+  getElements(name) {
+    return $.find(this.element, $.nameSelector(name));
+  }
+
   setValue(field, value) {
+    if (_.isString(field)) {
+      field = this.getElements(field); // multiple elements may be returned
+      if (field.length == 1) {
+        field = field[0];
+      }
+    }
     return $.setValue(field, value);
   }
 
@@ -61,7 +94,7 @@ class DomHarvester {
     if (!field) raise(12);
     // handle groups of radio or checkboxes, too
     if (_.isString(field) || isRadioButton(field) || this.isCheckboxInGroup(field))
-      return this.getValueFromElements($.find(this.element, $.nameSelector(field)));
+      return this.getValueFromElements(this.getElements(field));
 
     return getValue(field);
   }

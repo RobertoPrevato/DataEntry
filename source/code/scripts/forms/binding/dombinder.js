@@ -126,7 +126,7 @@ class DomBinder extends EventsEmitter {
         constraint = ox.constraint;
       if (constraint) {
         // explicit constraint
-        if (isFunction(constraint)) constraint = constraint.call(dataentry.context || dataentry);
+        if (isFunction(constraint)) constraint = constraint.call(dataentry);
 
         // constraint must be a single function name
         if (hasOwnProperty(constraints, constraint)) {
@@ -143,7 +143,7 @@ class DomBinder extends EventsEmitter {
         var validation = ox.validation || ox;
         if (validation) {
           // implicit constraint
-          if (isFunction(validation)) validation = validation.call(self.context || self);
+          if (isFunction(validation)) validation = validation.call(dataentry);
           for (var i = 0, l = len(validation); i < l; i++) {
 
             var name = isString(validation[i]) ? validation[i] : validation[i].name;

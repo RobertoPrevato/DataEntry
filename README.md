@@ -20,6 +20,7 @@ The objectives of the DataEntry library are:
 * logic to define formatting rules
 * logic to apply pre-formatting rules (formatting to be applied upon field focus)
 * logic to define constraints (disallow certain inputs, e.g. only positive integer values, only letters, .etc)
+* support for validation triggers between fields
 * good documentation, in [GitHub wiki](https://github.com/RobertoPrevato/DataEntry/wiki)
 * raised exceptions include a link to [GitHub wiki](https://github.com/RobertoPrevato/DataEntry/wiki/Errors), with instructions on how they can be resolved
 
