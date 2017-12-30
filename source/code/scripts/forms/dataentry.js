@@ -333,9 +333,10 @@ class DataEntry extends EventsEmitter {
     if (!trigger) return this;
 
     // don't repeat validation for fields already being validated
-    trigger = _.reject(trigger, o => {
-      return o === fieldName || _.contains(options.validatingFields, o);
-    })
+    if (options)
+      trigger = _.reject(trigger, o => {
+        return o === fieldName || _.contains(options.validatingFields, o);
+      })
 
     if (!len(trigger))
       return this;
@@ -344,7 +345,7 @@ class DataEntry extends EventsEmitter {
         dataentryOptions = self.options,
         triggersDelay = dataentryOptions.triggersDelay;
     // avoid recursive calls
-    if (options.depth > 0) {
+    if (options && options.depth > 0) {
       return self;
     }
     var depth = 1;

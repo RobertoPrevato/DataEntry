@@ -70,39 +70,39 @@ describe("DataEntry with DOM classes", () => {
   it("must handle group of input elements", always => {
     var wrapper = arrange(`
     <form method="post" action="?" action="?" autocomplete="off">
-    <fieldset>
-      <legend>Basic example</legend>
-      <label>Username</label>
-      <input type="text" name="name" /><br />
-      <label>Year (between 1900 and 2015)</label>
-      <input type="text" name="year" />
-      <br />
-      <label>A field that is not required, but accepts only letters</label>
-      <input type="text" name="only-letters" /><br />
-      <label>Favored food</label>
-      <select name="favored-food">
-        <option></option>
-        <optgroup label="Salty">
-          <option value="pizza">Pizza</option>
-          <option value="noodles">Noodles</option>
-          <option value="asado">Asado</option>
-          <option value="sushi">Sushi</option>
-        </optgroup>
-        <optgroup label="Sweets">
-          <option value="cheese-cake">Cheese cake</option>
-          <option value="chocolate">Chocolate</option>
-          <option value="marmalade">Marmalade</option>
-        </optgroup>
-      </select><br />
-      <label>Light side of the force:</label>
-      <input type="radio" value="light" name="force-side" /><br />
-      <label>Dark side of the force:</label>
-      <input type="radio" value="dark" name="force-side" /><br />
-      <label class="inline">A checkbox that must be checked (policy acceptance)</label>
-      <input type="checkbox" name="policy-read" /><br />
-    </fieldset>
-  </form>
-  <button class="validation-trigger">Validate</button>
+      <fieldset>
+        <legend>Basic example</legend>
+        <label>Username</label>
+        <input type="text" name="name" /><br />
+        <label>Year (between 1900 and 2015)</label>
+        <input type="text" name="year" />
+        <br />
+        <label>A field that is not required, but accepts only letters</label>
+        <input type="text" name="only-letters" /><br />
+        <label>Favored food</label>
+        <select name="favored-food">
+          <option></option>
+          <optgroup label="Salty">
+            <option value="pizza">Pizza</option>
+            <option value="noodles">Noodles</option>
+            <option value="asado">Asado</option>
+            <option value="sushi">Sushi</option>
+          </optgroup>
+          <optgroup label="Sweets">
+            <option value="cheese-cake">Cheese cake</option>
+            <option value="chocolate">Chocolate</option>
+            <option value="marmalade">Marmalade</option>
+          </optgroup>
+        </select><br />
+        <label>Light side of the force:</label>
+        <input type="radio" value="light" name="force-side" /><br />
+        <label>Dark side of the force:</label>
+        <input type="radio" value="dark" name="force-side" /><br />
+        <label class="inline">A checkbox that must be checked (policy acceptance)</label>
+        <input type="checkbox" name="policy-read" /><br />
+      </fieldset>
+    </form>
+    <button class="validation-trigger">Validate</button>
     `, "group of elements (1)");
 
     const dataentry = new DataEntry({
@@ -138,6 +138,47 @@ describe("DataEntry with DOM classes", () => {
       expect(data.errors.length).toEqual(6);
       always();
     }, noReject(always))
+  })
+
+  it("must handle properly validation triggers", () => {
+    var wrapper = arrange(`
+    <form method="post" action="?" action="?" autocomplete="off">
+      <fieldset>
+        <label>New password</label>
+        <input type="password" name="new-password" /><br />
+        <label>Password confirmation</label>
+        <input type="password" name="password-confirmation" /><br />
+      </fieldset>
+    </form>
+    <button class="validation-trigger">Validate</button>
+    `, "elements with trigger between fields");
+
+    const dataentry = new DataEntry({
+      element: wrapper,
+      marker: DomDecorator,
+      harvester: DomHarvester,
+      binder: DomBinder,
+      schema: {
+        "new-password": {
+          validation: function() {
+            var confirmation = this.getFieldValue("password-confirmation");
+            return confirmation ? ["required", { name: "equal", params: confirmation, message: "The passwords don't match"}] : ["required"];
+          },
+          trigger: ["password-confirmation"]
+        },
+        "password-confirmation": {
+          validation: ["required"],
+          trigger: ["new-password"]
+        }
+      }
+    })
+    
+    const context = dataentry.context;
+    $.on(wrapper, "click", ".validation-trigger", function () {
+      dataentry.validate();
+    })
+    // 
+    // TODO: add assetions
   })
 
   it("must throw exception if required parameters are missing", function () {

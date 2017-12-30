@@ -38,15 +38,6 @@ class DomHarvester {
 
     this.dataentry = dataentry;
     this.element = element;
-
-    const options = dataentry.options || {};
-    const context = options.sourceObject || dataentry.context;
-    
-    // set automatically values for the dataentry:
-    if (context) {
-      debugger
-      this.setValues(context);
-    }
   }
 
   /**

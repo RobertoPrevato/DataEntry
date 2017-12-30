@@ -1,0 +1,15 @@
+@startuml
+
+start
+title Design preferences\n
+
+if (do you tolerate a library handling DOM manipulation?) then (yes)
+  :you can use provided classes,\nlike in the demo;
+  :call __dispose()__\nwhen necessary;
+else (no)
+  :you can use DataEntry core classes;
+  :implement your own logic to fire\nvalidation when appropriate;
+endif
+stop
+
+@enduml

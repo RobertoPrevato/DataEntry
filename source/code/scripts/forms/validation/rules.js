@@ -87,6 +87,13 @@ const ValidationRules = {
     return true;
   },
 
+  equal: function (field, value, forced, expectedValue) {
+    if (value !== expectedValue) {
+      return getError("expectedValue", arguments);
+    }
+    return true;
+  },
+
   letters: function (field, value, forced) {
     if (!value) return true;
     if (!/^[a-zA-Z]+$/.test(value))
