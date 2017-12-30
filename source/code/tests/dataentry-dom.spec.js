@@ -15,7 +15,7 @@ import DomBinder from "../scripts/forms/binding/dombinder"
 import _ from "../scripts/utils"
 import $ from "../scripts/dom"
 import { raiseSettings } from "../scripts/raise"
-import { noReject } from "./tests-utils"
+import { noReject, wait } from "./tests-utils"
 
 
 raiseSettings.writeToConsole = false; // for tests
@@ -175,10 +175,29 @@ describe("DataEntry with DOM classes", () => {
     
     const context = dataentry.context;
     $.on(wrapper, "click", ".validation-trigger", function () {
-      dataentry.validate();
+      dataentry.validate()
     })
-    // 
-    // TODO: add assetions
+    
+    const passInput = wrapper.querySelector("[name='new-password']")
+    const passConfirmationInput = wrapper.querySelector("[name='password-confirmation']")
+    passInput.value = "hello"
+    passConfirmationInput.value = "world"
+
+    dataentry.validationActive = true
+
+    // validation of password confirmation must trigger validation of the new password field
+    $.fire(passConfirmationInput, "blur")
+
+    wait().then(() => {
+
+      var tooltipMessage = wrapper.querySelector(".ug-validation-wrapper .tooltip-inner")
+      
+      expect(tooltipMessage).toBeDefined()
+      expect(tooltipMessage.innerText).toEqual("The passwords don't match")
+
+      const previousElement = $.prev(wrapper.querySelector(".ug-validation-wrapper"))
+      expect(previousElement === passInput).toEqual(true)
+    })
   })
 
   it("must throw exception if required parameters are missing", function () {

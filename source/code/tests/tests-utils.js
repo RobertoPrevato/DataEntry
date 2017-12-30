@@ -14,4 +14,12 @@ function noReject(always) {
   }
 }
 
-export { noReject }
+function wait(ms) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve();
+    }, ms || 0);
+  });
+}
+
+export { noReject, wait }

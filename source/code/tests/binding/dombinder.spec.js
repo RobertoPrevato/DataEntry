@@ -17,7 +17,7 @@ import DomHarvester from "../../scripts/forms/harvesting/domharvester"
 import DomDecorator from "../../scripts/forms/decoration/domdecorator"
 import _ from "../../scripts/utils"
 import $ from "../../scripts/dom"
-import { noReject } from "../tests-utils"
+import { noReject, wait } from "../tests-utils"
 
 //#region useful functions
 
@@ -139,7 +139,7 @@ describe("DomBinder", () => {
     $.fire(input, "blur");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       expect($.hasClass(input, "ug-field-invalid")).toEqual(true);
       expect($.hasClass(input, "ug-field-valid")).toEqual(false);
       
@@ -148,12 +148,12 @@ describe("DomBinder", () => {
 
       $.fire(input, "blur");
 
-      setTimeout(function () {
-        expect($.hasClass(input, "ug-field-invalid")).toEqual(false);
-        expect($.hasClass(input, "ug-field-valid")).toEqual(true);
-        always();
-      }, 0);
-    }, 0);
+      return wait();
+    }).then(() => {
+      expect($.hasClass(input, "ug-field-invalid")).toEqual(false);
+      expect($.hasClass(input, "ug-field-valid")).toEqual(true);
+      always();
+    })
   })
 
   it("must fire formatting after successful validation", always => {
@@ -182,12 +182,12 @@ describe("DomBinder", () => {
     $.fire(input, "blur");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       const v = input.value;
       expect(v).toEqual("007");
 
       always();
-    }, 0);
+    })
   })
 
   it("must activate dataentry validation after user interaction", always => {
@@ -209,10 +209,10 @@ describe("DomBinder", () => {
     $.fire(input, "keypress");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       expect(dataentry.validationActive).toEqual(true);
       always();
-    }, 0);
+    });
   })
 
   it("must activate dataentry validation after change event (select)", always => {
@@ -238,10 +238,10 @@ describe("DomBinder", () => {
     $.fire(input, "change");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       expect(dataentry.validationActive).toEqual(true);
       always();
-    }, 0);
+    });
   })
 
   it("must activate dataentry validation after change event (radio buttons)", always => {
@@ -264,10 +264,10 @@ describe("DomBinder", () => {
     $.fire(input, "change");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       expect(dataentry.validationActive).toEqual(true);
       always();
-    }, 0);
+    });
   })
 
   it("must activate dataentry validation after change event (group of checkboxes)", always => {
@@ -294,10 +294,10 @@ describe("DomBinder", () => {
     $.fire(input, "change");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       expect(dataentry.validationActive).toEqual(true);
       always();
-    }, 0);
+    });
   })
 
   it("must fire pre format fields on focus", always => {
@@ -325,18 +325,19 @@ describe("DomBinder", () => {
     $.fire(input, "focus");
 
     // the field must be marked as invalid:
-    setTimeout(function () {
+    wait().then(() => {
       const v = input.value;
       expect(v).toEqual("7");
 
       $.fire(input, "blur");
-      setTimeout(function () {
-        const v = input.value;
-        expect(v).toEqual("007");
-  
-        always();
-      }, 0);
-    }, 0);
+
+      return wait();
+    }).then(() => {
+      const v = input.value;
+      expect(v).toEqual("007");
+
+      always();
+    });
   })
 
   it("must fire constraint rules on keypress", always => {
