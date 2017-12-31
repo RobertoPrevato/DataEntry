@@ -4,8 +4,8 @@ start
 title Design preferences\n
 
 if (do you tolerate a library handling DOM manipulation?) then (yes)
-  :you can use provided classes,\nlike in the demo;
-  :call __dispose()__\nwhen necessary;
+  :you can use provided classes,\nlike in the React demo;
+  :the same concepts apply to other frameworks;
 else (no)
   :you can use DataEntry core classes\n(abstracted from DOM);
   :implement your own logic to fire\nvalidation when appropriate;
