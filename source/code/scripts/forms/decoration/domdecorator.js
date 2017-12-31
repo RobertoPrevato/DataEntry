@@ -51,10 +51,8 @@ function checkChosen(element) {
 // then it makes sense to display information only on the first one;
 function checkGroup(element) {
   if (isRadioButton(element)) {
-    // return the last radio button sibling;
-    return $.lastSibling(element, sibling => {
-      return isRadioButton(sibling);
-    }) || element;
+    // return the first radio button appearing in DOM
+    return this.dataentry && this.dataentry.element ? this.dataentry.element.querySelectorAll($.nameSelector(element))[0] : element;
   }
   return element;
 }

@@ -239,7 +239,7 @@ describe("DomDecorator", () => {
 
     // by default, the tooltip must be displayed after the last radio button:
     var tooltipElement = getValidationWrapper(wrapper);
-    expect(tooltipElement.previousElementSibling).toEqual(document.getElementById("dark-side"));
+    expect(tooltipElement.previousElementSibling).toEqual(document.getElementById("light-side"));
   })
 
   it("must let specify decoration targets", () => {

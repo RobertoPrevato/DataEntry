@@ -143,6 +143,9 @@ class DataEntry extends EventsEmitter {
       delete self.options[name];
     })
     delete self.options;
+    // remove event listeners
+    self.off();
+    self.stopListening();
     return self;
   }
 
@@ -323,6 +326,8 @@ class DataEntry extends EventsEmitter {
       }
     }
     if (formattedValue !== value) {
+      // trigger event to 
+      self.trigger("format", field, fieldName, formattedValue);
       self.harvester.setValue(field, formattedValue, self, fieldName);
     }
     return self;

@@ -427,6 +427,7 @@ export default {
   },
 
   contains(a, o) {
+    if (!a) return false;
     return a.indexOf(o) > -1;
   },
 

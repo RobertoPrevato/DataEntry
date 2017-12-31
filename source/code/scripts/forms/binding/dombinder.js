@@ -59,7 +59,8 @@ class DomBinder extends EventsEmitter {
   dispose() {
     const self = this;
     self.unbind();
-
+    self.off();
+    self.stopListening();
     // delete handlers
     for (var x in self.fn) {
       delete self.fn[x];
