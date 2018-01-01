@@ -4,7 +4,7 @@
  * 
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2017, Roberto Prevato
+ * Copyright 2018, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:
@@ -48,7 +48,6 @@ describe("DomBinder", () => {
         ufo: ["none"]
       },
       options: {},
-      validator: { ev: "blur" },
       element: true
     });
     var ev = binder.getValidationDefinition();
@@ -58,6 +57,119 @@ describe("DomBinder", () => {
       "blur [name='foo']": "validation_foo",
       "blur [name='ufo']": "validation_ufo"
     });
+  })
+
+  it("must support validationEvent option", () => {
+    var binder = new DomBinder({
+      schema: {
+        foo: ["required"],
+        ufo: ["none"]
+      },
+      options: {
+        validationEvent: "keyup"
+      },
+      element: true
+    });
+    var ev = binder.getValidationDefinition();
+
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({
+      "keyup [name='foo']": "validation_foo",
+      "keyup [name='ufo']": "validation_ufo"
+    });
+  })
+
+  it("must support global validationEvent option", () => {
+    DomBinder.validationEvent = "keyup";
+
+    var binder = new DomBinder({
+      schema: {
+        foo: ["required"],
+        ufo: ["none"]
+      },
+      options: {
+        
+      },
+      element: true
+    });
+    var ev = binder.getValidationDefinition();
+
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({
+      "keyup [name='foo']": "validation_foo",
+      "keyup [name='ufo']": "validation_ufo"
+    });
+
+    DomBinder.validationEvent = "blur";
+  })
+
+  it("must support rule validationEvent option", () => {
+    var binder = new DomBinder({
+      schema: {
+        foo: ["required"],
+        ufo: { 
+          validation: ["none"], 
+          validationEvent: "blur" 
+        }
+      },
+      options: {
+        validationEvent: "keyup"
+      },
+      element: true
+    });
+    var ev = binder.getValidationDefinition();
+
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({
+      "keyup [name='foo']": "validation_foo",
+      "blur [name='ufo']": "validation_ufo"
+    });
+  })
+
+  it("must support multiple events for validationEvent option", () => {
+    var binder = new DomBinder({
+      schema: {
+        foo: ["required"],
+        ufo: { 
+          validation: ["none"], 
+          validationEvent: "blur, custom" 
+        }
+      },
+      options: {},
+      element: true
+    });
+    var ev = binder.getValidationDefinition();
+
+    expect(ev).toBeDefined();
+    expect(ev).toEqual({
+      "blur [name='foo']": "validation_foo",
+      "custom [name='ufo']": "validation_ufo",
+      "blur [name='ufo']": "validation_ufo"
+    });
+  })
+
+  it("must support extra events definition", () => {
+    const handler = function () {}
+    var binder = new DomBinder({
+      schema: {
+        foo: ["required"],
+        ufo: { 
+          validation: ["none"], 
+          validationEvent: "blur" 
+        }
+      },
+      options: {
+        events: {
+          "change #foo": handler
+        }
+      },
+      element: true
+    });
+    var ev = binder.getEvents();
+
+    expect(ev).toBeDefined();
+    expect(ev["change #foo"]).toBeDefined();
+    expect(ev["change #foo"]).toEqual(handler);
   })
 
   it("must obtain pre formatting (on focus) event definition by schema", () => {
@@ -365,39 +477,39 @@ describe("DomBinder", () => {
   it("must handle group of input elements", always => {
     var wrapper = arrange(`
     <form method="post" action="?" action="?" autocomplete="off">
-    <fieldset>
-      <legend>Basic example</legend>
-      <label>Username</label>
-      <input type="text" name="name" /><br />
-      <label>Year (between 1900 and 2015)</label>
-      <input type="text" name="year" />
-      <br />
-      <label>A field that is not required, but accepts only letters</label>
-      <input type="text" name="only-letters" /><br />
-      <label>Favored food</label>
-      <select name="favored-food">
-        <option></option>
-        <optgroup label="Salty">
-          <option value="pizza">Pizza</option>
-          <option value="noodles">Noodles</option>
-          <option value="asado">Asado</option>
-          <option value="sushi">Sushi</option>
-        </optgroup>
-        <optgroup label="Sweets">
-          <option value="cheese-cake">Cheese cake</option>
-          <option value="chocolate">Chocolate</option>
-          <option value="marmalade">Marmalade</option>
-        </optgroup>
-      </select><br />
-      <label>Light side of the force:</label>
-      <input type="radio" value="light" name="force-side" /><br />
-      <label>Dark side of the force:</label>
-      <input type="radio" value="dark" name="force-side" /><br />
-      <label class="inline">A checkbox that must be checked (policy acceptance)</label>
-      <input type="checkbox" name="policy-read" /><br />
-    </fieldset>
-  </form>
-  <button class="validation-trigger">Validate</button>
+      <fieldset>
+        <legend>Basic example</legend>
+        <label>Username</label>
+        <input type="text" name="name" /><br />
+        <label>Year (between 1900 and 2015)</label>
+        <input type="text" name="year" />
+        <br />
+        <label>A field that is not required, but accepts only letters</label>
+        <input type="text" name="only-letters" /><br />
+        <label>Favored food</label>
+        <select name="favored-food">
+          <option></option>
+          <optgroup label="Salty">
+            <option value="pizza">Pizza</option>
+            <option value="noodles">Noodles</option>
+            <option value="asado">Asado</option>
+            <option value="sushi">Sushi</option>
+          </optgroup>
+          <optgroup label="Sweets">
+            <option value="cheese-cake">Cheese cake</option>
+            <option value="chocolate">Chocolate</option>
+            <option value="marmalade">Marmalade</option>
+          </optgroup>
+        </select><br />
+        <label>Light side of the force:</label>
+        <input type="radio" value="light" name="force-side" /><br />
+        <label>Dark side of the force:</label>
+        <input type="radio" value="dark" name="force-side" /><br />
+        <label class="inline">A checkbox that must be checked (policy acceptance)</label>
+        <input type="checkbox" name="policy-read" /><br />
+      </fieldset>
+    </form>
+    <button class="validation-trigger">Validate</button>
     `, "group of elements with binder (2)");
 
     const dataentry = new DataEntry({

@@ -6,7 +6,7 @@
  * 
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2017, Roberto Prevato
+ * Copyright 2018, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:
@@ -39,11 +39,16 @@ class DomBinder extends EventsEmitter {
       raise(20, "missing `element` in dataentry");
     self.fn = {};
 
-    var options = dataentry ? dataentry.options : null;
+    var options = dataentry ? dataentry.options : {};
     self.constraints = _.extend({}, Constraints, options.constraintRules);
 
+    if (options.events)
+      self.events = options.events;
+
+    self.validationEvent = options.validationEvent || DomBinder.validationEvent;
+
     if (self.element !== true)
-    self.bind();
+      self.bind();
     
     // does the dataentry implement the event interface?
     if (_.quacks(dataentry, ["on", "trigger"])) {
@@ -104,7 +109,8 @@ class DomBinder extends EventsEmitter {
       self.getValidationDefinition(),
       self.getPreFormattingDefinition(),
       self.getMetaEvents(),
-      self.getConstraintsDefinition());
+      self.getConstraintsDefinition()
+    );
     return events;
   }
 
@@ -220,10 +226,15 @@ class DomBinder extends EventsEmitter {
     if (!schema) return {};
     var o = {}, x;
     for (x in schema) {
-      var validationEvent = schema[x].validationEvent,
-          ev = `${(validationEvent || "blur")} [name='${x}']`,
-          functionName = "validation_" + x;
-      o[ev] = functionName;
+      var validationEvent = schema[x].validationEvent || self.validationEvent;
+      // support multiple events:
+      var names = validationEvent.split(/,|;/g);
+      var functionName = "validation_" + x;
+      _.each(names, name => {
+        name = name.trim();
+        var ev = `${name} [name='${x}']`;
+        o[ev] = functionName;
+      })
       // store handler
       self.fn[functionName] = self.getValidationEventHandler(x);
     }
@@ -260,9 +271,11 @@ class DomBinder extends EventsEmitter {
         var error = first(data, function (o) { return o.error; });
 
         if (error) {
-          marker.markFieldInvalid(f, {
+          const errorData = {
             message: error.message
-          });
+          };
+          marker.markFieldInvalid(f, errorData);
+          dataentry.trigger("errors", [errorData]);
         } else {
           // mark the field valid
           marker.markFieldValid(f);
@@ -276,9 +289,11 @@ class DomBinder extends EventsEmitter {
         for (var i = 0, l = len(data); i < l; i++) {
           if (!data[i] || data[i].error) {
             // mark field invalid on the first validation dataentry failed
-            marker.markFieldInvalid(f, {
+            const errorData = {
               message: data[i].message
-            });
+            };
+            marker.markFieldInvalid(f, errorData);
+            dataentry.trigger("errors", [errorData]);
           }
         }
       });
@@ -322,5 +337,7 @@ class DomBinder extends EventsEmitter {
     };
   }
 }
+
+DomBinder.validationEvent = "blur";
 
 export default DomBinder

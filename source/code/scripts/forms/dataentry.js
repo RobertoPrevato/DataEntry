@@ -2,7 +2,7 @@
  * DataEntry class.
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2017, Roberto Prevato
+ * Copyright 2018, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:
@@ -14,7 +14,7 @@ import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"
 
-const VERSION = "2.0.1"
+const VERSION = "2.0.3"
 
 const DEFAULTS = {
   

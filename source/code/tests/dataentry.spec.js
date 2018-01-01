@@ -2,7 +2,7 @@
  * Tests for core DataEntry classes.
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2017, Roberto Prevato
+ * Copyright 2018, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:
@@ -921,6 +921,70 @@ describe("DataEntry", () => {
       expect(aCall).toEqual(4)
       expect(bCall).toEqual(3)
       expect(cCall).toEqual(2)
+  
+      always();
+    }).catch(function () {
+      console.error(arguments);
+      always();
+    });
+  });
+
+  it("must handle multiple triggers for each field", always => {
+    var data = {};
+    var aCall = 0;
+    var bCall = 0;
+    var cCall = 0;
+
+    const a = new DataEntry({
+      schema: {
+        a: {
+          validation: function () {
+            aCall++;
+            return ["none"];
+          },
+          trigger: ["b", "c"]
+        },
+        b: {
+          validation: function () {
+            bCall++;
+            return ["none"];
+          },
+          trigger: ["a", "c"]
+        },
+        c: {
+          validation: function () {
+            cCall++;
+            return ["none"];
+          },
+          trigger: ["a"]
+        }
+      },
+      marker: new TestMarker(data),
+      harvester: new TestHarvester(data)
+    })
+
+    a.validate(["a"]).then(results => {
+      expect(aCall).toEqual(1)
+      expect(bCall).toEqual(1)
+      expect(cCall).toEqual(1)
+
+      return a.validate(["b"]);
+    }).then(results => {
+      expect(aCall).toEqual(2)
+      expect(bCall).toEqual(2)
+      expect(cCall).toEqual(2)
+
+      return a.validate(["a", "b"])
+    }).then(results => {
+      expect(aCall).toEqual(3)
+      expect(bCall).toEqual(3)
+      expect(cCall).toEqual(4)
+  
+      return a.validate(["c"]);
+    }).then(results => {
+      expect(aCall).toEqual(4)
+      expect(bCall).toEqual(3)
+      expect(cCall).toEqual(5)
   
       always();
     }).catch(function () {
