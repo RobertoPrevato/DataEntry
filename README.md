@@ -2,7 +2,8 @@
 Forms validation library that implements Promise based validation of fields and forms, automatic decoration of fields, localized error messages. The library has no dependency on other libraries and can be integrated with frameworks such as React, Vue.js, Aurelia, Knockout, Angular, etc.
 
 * [Getting started](https://github.com/RobertoPrevato/DataEntry/wiki/Getting-started)
-* [Live demo, using React](https://robertoprevato.github.io/demos/dataentry/index.html)
+* [Live demo, with React](https://robertoprevato.github.io/demos/dataentry/index.html)
+* [Live demo, with Vue.js](https://robertoprevato.github.io/demos/dataentry-vuejs/index.html)
 
 ## Objectives
 The objectives of the DataEntry library are:
