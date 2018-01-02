@@ -4,7 +4,7 @@ start
 title Design preferences\n
 
 if (do you tolerate a library handling DOM manipulation?) then (yes)
-  :you can use provided classes,\nlike in the React demo;
+  :you can use provided classes,\nlike in the provided demos;
   :the same concepts apply to other frameworks;
 else (no)
   :you can use DataEntry core classes\n(abstracted from DOM);
