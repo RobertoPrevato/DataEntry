@@ -14,7 +14,7 @@ import EventsEmitter from "../../scripts/components/events"
 import Formatter from "./formatting/formatter"
 import Validator from "./validation/validator"
 
-const VERSION = "2.0.3"
+const VERSION = "2.0.4"
 
 const DEFAULTS = {
   

@@ -19,6 +19,22 @@ const len = _.len;
 const any = _.any;
 const each = _.each;
 
+/**
+* Returns the currently active element, in the DOM.
+*/
+function getFocusedElement() {
+ return document.querySelector(":focus");
+}
+/**
+* Return a value indicating whether the given element is focused.
+*
+* @param el: element to check for focus
+*/
+function isFocused(el) {
+ if (!el) return false;
+ return el === getFocusedElement();
+}
+
 function modClass(el, n, add) {
   if (n.search(/\s/) > -1) {
     n = n.split(/\s/g);
@@ -56,15 +72,55 @@ function nameSelector(el) {
 function isPassword(o) {
   return isInput(o) && attr(o, "type") == "password";
 }
+const isIE = /Trident\/|MSIE/.test(window.navigator.userAgent);
+
+/**
+ * Fires an event on a given element.
+ *
+ * @param el: element on which to fire an event.
+ * @param eventName: name of the event to fire.
+ * @param data: event data.
+ */
+function fire(el, eventName, data) {
+  if (eventName == "focus") {
+    el.focus();
+  }
+  var event;
+  if (isIE) {
+    event = document.createEvent("Event");
+    // args: string type, boolean bubbles, boolean cancellable
+    event.initEvent(eventName, false, true); 
+    el.dispatchEvent(event);
+    return;
+  }
+  if (window.CustomEvent) {
+    event = new CustomEvent(eventName, { detail: data });
+  } else if (document.createEvent) {
+    event = document.createEvent("CustomEvent");
+    event.initCustomEvent(eventName, true, true, data);
+  }
+  el.dispatchEvent(event);
+}
 function setValue(el, v) {
   if (el.type == "checkbox") {
     el.checked = v == true || /1|true/.test(v);
-    el.dispatchEvent(new Event("change"), { forced: true });
+    fire(el, "change", { forced: true });
     return;
   }
   if (el.value != v) {
+    var selectionStart;
+
+    if (isIE) {
+      selectionStart = el.selectionStart;
+    }
+
     el.value = v;
-    el.dispatchEvent(new Event("change"), { forced: true });
+
+    // fix for IE11 moving caret at the beginning of the value, after setting element value
+    if (isIE && isFocused(el)) {
+      el.selectionStart = selectionStart;
+    }
+    fire(el, "change", { forced: true });
   }
 }
 function isContentEditable(el) {
@@ -393,26 +449,7 @@ export default {
     return self;
   },
 
-  /**
-   * Fires an event on a given element.
-   *
-   * @param el: element on which to fire an event.
-   * @param eventName: name of the event to fire.
-   * @param data: event data.
-   */
-  fire(el, eventName, data) {
-    if (eventName == "focus") {
-      el.focus();
-    }
-    var event;
-    if (window.CustomEvent) {
-      event = new CustomEvent(eventName, { detail: data });
-    } else if (document.createEvent) {
-      event = document.createEvent("CustomEvent");
-      event.initCustomEvent(eventName, true, true, data);
-    }
-    el.dispatchEvent(event);
-  },
+  fire,
 
   /**
    * Returns the siblings of the given element.
@@ -476,22 +513,9 @@ export default {
     return el.getElementsByClassName(name);
   },
 
-  /**
-   * Return a value indicating whether the given element is focused.
-   *
-   * @param el: element to check for focus
-   */
-  isFocused(el) {
-    if (!el) return false;
-    return el === this.getFocusedElement();
-  },
+  isFocused,
 
-  /**
-   * Returns the currently active element, in the DOM.
-   */
-  getFocusedElement() {
-    return document.querySelector(":focus");
-  },
+  getFocusedElement,
 
   /**
    * Returns a value indicating whether there is any input element currently focused.

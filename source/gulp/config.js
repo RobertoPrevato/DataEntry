@@ -5,7 +5,7 @@ const IMG_DEST = WWWROOT + "images/";
 const FONTS_DEST = WWWROOT + "styles/fonts/";
 
 const year = new Date().getFullYear();
-const VERSION = "2.0.1"
+const VERSION = "2.0.4"
 const LICENSE = `
 /**
  * DataEntry ${VERSION}#COMMENT#
