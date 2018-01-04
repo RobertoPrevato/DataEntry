@@ -1,6 +1,3 @@
-const istanbul = require("browserify-istanbul");
-const isparta = require("isparta");
-
 module.exports = config => {
   config.set({
 
@@ -19,7 +16,7 @@ module.exports = config => {
 
     browsers: ["PhantomJS"],
 
-    reporters: ["progress", "coverage"],
+    reporters: ["progress"],
 
     autoWatch: true,
 
@@ -27,11 +24,7 @@ module.exports = config => {
       debug: true,
       extensions: [".js"],
       transform: [
-        "babelify",
-        istanbul({
-          instrumenter: isparta,
-          ignore: ["**/node_modules/**", "**/test/**"]
-        })
+        "babelify"
       ]
     },
 
