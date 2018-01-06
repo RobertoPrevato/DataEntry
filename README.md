@@ -28,7 +28,7 @@ The objectives of the DataEntry library are:
 ### What DataEntry is not
 DataEntry is not a templating engine. It doesn't create HTML forms, nor populates the values of HTML input elements with values read from objects. DataEntry is only concerned with validation, which can be of objects in memory, or HTML elements. In the latter case, whether the HTML of a form is generated using a server side engine, or the templating engine of client side libraries or frameworks, DataEntry can be used to validate the values of these forms. The only exception is formatting of values inside input fields: DataEntry has built-in features to automatically format values after successful validation (this feature can be turned off as desired), which is a simple case to handle.
 
-## Pluggable design
+## Design
 The library is designed to clearly separate functions that do business logic from classes that read / write values and mark fields as valid or invalid. See [Core classes and design](https://github.com/RobertoPrevato/DataEntry/wiki/Core-classes-and-design) for more information.
 
 ## Validation schema
