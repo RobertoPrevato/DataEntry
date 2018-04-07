@@ -29,6 +29,7 @@ const nameSelector = $.nameSelector;
 const isHidden = $.isHidden;
 const findFirst = $.findFirst;
 const after = $.after;
+const attr = $.attr;
 
 // support for explicitly defined targets through data attributes
 function checkSpecificTarget(element) {
@@ -36,16 +37,7 @@ function checkSpecificTarget(element) {
   if (specificTarget) 
     return document.getElementById(specificTarget);
 }
-// support for chosen js when marking fields invalid or valid
-function checkChosen(element) {
-  // fix for chosen selects
-  if (!element) return;
-  if (/select/i.test(element.tagName) && isHidden(element) && hasClass(element, "chosen-select")) {
-    // replace the element with the chosen element
-    return next(element);
-  }
-  return element;
-}
+
 // when a field relates to a group, then it make sense to display information only on the first element of the group.
 // a common case for this situation are radio buttons: if a value coming from a group of radio buttons is required,
 // then it makes sense to display information only on the first one;
@@ -63,7 +55,6 @@ function checkElement(element) {
     return specificTarget;
   
   var re = checkGroup.call(this, element);
-  re = checkChosen.call(this, re);
   // support radio and checkboxes before labels (decorate after labels)
   if (/^radio|checkbox$/i.test(element.type)) {
     var nx = next(element);
@@ -89,6 +80,7 @@ class DomDecorator {
     this.dataentry = dataentry;
     // default to tooltips if not specified otherwise
     this.markStyle = dataentry ? (dataentry.options.markStyle || TOOLTIPS) : TOOLTIPS;
+    this.options = _.extend({}, DomDecorator.defaults, dataentry.options.decoratorOptions);
     this._elements = [];
   }
 
@@ -98,8 +90,30 @@ class DomDecorator {
     return el;
   }
 
+  checkElement(element) {
+    return checkElement(element)
+  }
+
+  bindDecoratorElement(field, markerElement) {
+    if ($.attr(markerElement, 'id') === field.dataset.markerId) {
+      // elements are already bound
+      return;
+    }
+    let uniqueId = _.uniqueId('ug-dataentry-marker');
+    $.setAttr(markerElement, {'id': uniqueId});
+    field.dataset.markerId = uniqueId;
+  }
+
+  getCurrentMessageElement(field) {
+    let markerId = field.dataset.markerId;
+    if (markerId) {
+      return document.getElementById(markerId);
+    }
+  }
+
   /**
    * Gets an element to display validation information about the given field.
+   * If the element already exists, it is returned.
    * 
    * @param f
    * @param create
@@ -108,20 +122,26 @@ class DomDecorator {
   getMessageElement(f, create, options) {
     var self = this;
     if (self.markStyle == TOOLTIPS) {
-      var c = "ug-validation-wrapper",
-        l = nextWithClass(f, c);
+      var l = self.getCurrentMessageElement(f);
       if (l)
         return l;
-      return create ? self.getTooltipElement(f, create, options) : null;
+      if (create) {
+        l = self.getTooltipElement(f, create, options);
+        // assign an unique id to this element;
+        self.bindDecoratorElement(f, l);
+        return l;
+      } else {
+        return null;
+      }
     }
-    var c = "ug-message-element",
-      l = nextWithClass(f, c);
+    var l = self.getCurrentMessageElement(f);
     if (l)
       return l;
     if (!create)
       return null;
     l = self.create("span");
-    addClass(l, c);
+    addClass(l, "ug-message-element");
+    self.bindDecoratorElement(f, l);
     return l;
   }
 
@@ -203,9 +223,9 @@ class DomDecorator {
    * @returns {DomMarker|*}
    */
   markFieldNeutrum(f) {
-    var self = this;
+    var self = this, options = self.options;
     f = checkElement.call(self, f);
-    removeClass(f, "ug-field-invalid ug-field-valid");
+    removeClass(f, `${options.invalidClass} ${options.validClass}`);
     return self.removeMessageElement(f);
   }
 
@@ -216,9 +236,9 @@ class DomDecorator {
    * @returns {DomMarker|*}
    */
   markFieldValid(f) {
-    var self = this;
+    var self = this, options = self.options;
     f = checkElement.call(self, f);
-    addClass(removeClass(f, "ug-field-invalid"), "ug-field-valid");
+    addClass(removeClass(f, options.invalidClass), options.validClass);
     return self.removeMessageElement(f);
   }
 
@@ -245,8 +265,9 @@ class DomDecorator {
    * @returns {DomMarker}
    */
   markFieldInfo(f, options) {
-    addClass(removeClass(f, "ug-field-invalid"), "ug-field-valid");
-    return this.markField(f, options, "ug-info");
+    var self = this, o = self.options;
+    addClass(removeClass(f, o.invalidClass), o.validClass);
+    return self.markField(f, options, "ug-info");
   }
 
   /**
@@ -257,8 +278,9 @@ class DomDecorator {
    * @returns {DomMarker}
    */
   markFieldInvalid(f, options) {
-    addClass(removeClass(f, "ug-field-valid"), "ug-field-invalid");
-    return this.markField(f, options, "ug-error");
+    var self = this, o = self.options;
+    addClass(removeClass(f, o.validClass), o.invalidClass);
+    return self.markField(f, options, "ug-error");
   }
 
   /**
@@ -292,7 +314,9 @@ class DomDecorator {
 }
 
 DomDecorator.defaults = {
-  position: "right"
+  position: "right",
+  invalidClass: "ug-field-invalid",
+  validClass: "ug-field-valid"
 }
 
 export default DomDecorator
