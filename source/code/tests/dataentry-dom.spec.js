@@ -2,7 +2,7 @@
  * Tests for DataEntry used with DomDecorator and DomHarvester.
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2018, Roberto Prevato
+ * Copyright 2019, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:

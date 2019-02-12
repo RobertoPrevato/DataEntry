@@ -4,7 +4,7 @@
  * 
  * https://github.com/RobertoPrevato/DataEntry
  *
- * Copyright 2018, Roberto Prevato
+ * Copyright 2019, Roberto Prevato
  * https://robertoprevato.github.io
  *
  * Licensed under the MIT license:
@@ -12,7 +12,6 @@
  */
 import _ from "../../../scripts/utils"
 import $ from "../../../scripts/dom"
-import { raise } from "../../../scripts/raise"
 
 const each = _.each;
 const extend = _.extend;
@@ -22,11 +21,8 @@ const addClass = $.addClass;
 const removeClass = $.removeClass;
 const removeElement = $.remove.bind($);
 const next = $.next;
-const nextWithClass = $.nextWithClass;
 const createElement = $.createElement;
 const isRadioButton = $.isRadioButton;
-const nameSelector = $.nameSelector;
-const isHidden = $.isHidden;
 const findFirst = $.findFirst;
 const after = $.after;
 const attr = $.attr;
@@ -80,7 +76,7 @@ class DomDecorator {
     this.dataentry = dataentry;
     // default to tooltips if not specified otherwise
     this.markStyle = dataentry ? (dataentry.options.markStyle || TOOLTIPS) : TOOLTIPS;
-    this.options = _.extend({}, DomDecorator.defaults, dataentry.options.decoratorOptions);
+    this.options = _.extend({}, DomDecorator.defaults, dataentry && dataentry.options ? dataentry.options.decoratorOptions : {});
     this._elements = [];
   }
 

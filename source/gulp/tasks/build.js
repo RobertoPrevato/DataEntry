@@ -4,7 +4,6 @@ const buffer = require("vinyl-buffer");
 const babelify = require("babelify");
 const browserify = require("browserify");
 const watchify = require("watchify");
-const gutil = require("gulp-util");
 const cssmin = require("gulp-cssmin");
 const less = require("gulp-less");
 const uglify = require("gulp-uglify");

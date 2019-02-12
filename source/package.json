@@ -5,8 +5,7 @@
   "private": true,
   "scripts": {
     "karchrome": "karma start karma-chrome.conf.js",
-    "build": "babel code --presets babel-preset-es2015 --out-dir ../dist",
-    "build-min": "babel dataentry.js --presets babel-preset-es2015 --minified --no-comments --out-dir ../dist"
+    "build": "babel code --presets babel-preset-env --out-dir ../dist"
   },
   "author": "https://github.com/RobertoPrevato",
   "devDependencies": {
@@ -30,7 +29,6 @@
     "gulp-less": "^4.0.0",
     "gulp-notify": "^3.1.0",
     "gulp-uglify": "^3.0.0",
-    "gulp-util": "^3.0.7",
     "isparta": "^4.0.0",
     "jasmine-core": "^3.1.0",
     "karma": "^2.0.0",
